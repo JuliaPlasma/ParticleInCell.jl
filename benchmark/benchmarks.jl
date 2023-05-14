@@ -1,0 +1,39 @@
+using ParticleInCell2
+using BenchmarkTools
+
+# Set up some fields
+dimension = 2
+lower_bounds = ntuple(x -> 0., dimension)
+upper_bounds = ntuple(x -> 1., dimension)
+num_cells = ntuple(x -> 16, dimension)
+periodic = ntuple(x -> true, dimension)
+g = UniformCartesianGrid(lower_bounds, upper_bounds, num_cells, periodic)
+rho = Field(g, ParticleInCell2.node, 1)
+phi = Field(g, ParticleInCell2.node, 1)
+Eedge = Field(g, ParticleInCell2.edge, 2)
+Enode = Field(g, ParticleInCell2.node, 2)
+
+# Create a species
+n_particles = 1000
+positions = rand(dimension, n_particles)
+momentums = fill(0., dimension, n_particles)
+forces =    fill(0., dimension, n_particles)
+weights =   fill(1., dimension, n_particles)
+species = Species(positions, momentums, forces, weights, 1., 1.)
+
+const SUITE = BenchmarkGroup()
+
+bs_charge = BSplineChargeInterpolation(species, rho, 1)
+SUITE["charge_dep"] = BenchmarkGroup(["interpolation", "particle", "field"])
+SUITE["charge_dep"]["creation"] = @benchmarkable BSplineChargeInterpolation($species, $rho, 1)
+SUITE["charge_dep"]["step"] = @benchmarkable step!(1, $bs_charge)
+
+bs_field = BSplineFieldInterpolation(species, rho, 1)
+SUITE["field_interp"] = BenchmarkGroup(["interpolation", "particle", "field"])
+SUITE["field_interp"]["creation"] = @benchmarkable BSplineFieldInterpolation($species, $rho, 1)
+SUITE["field_interp"]["step"] = @benchmarkable step!(1, $bs_field)
+
+fs = PoissonSolveFFT(rho, phi)
+SUITE["fft_field_solve"] = BenchmarkGroup(["interpolation", "particle", "field"])
+SUITE["fft_field_solve"]["creation"] = @benchmarkable PoissonSolveFFT($rho, $phi)
+SUITE["fft_field_solve"]["step"] = @benchmarkable step!(1, $fs)
