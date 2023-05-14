@@ -47,8 +47,9 @@ function step!(::Any, step::BSplineFieldInterpolation)
         # Iterate over nodes within the stencil, and compute the corresponding
         # charge for each node
         for I in Is
-            step.species.forces[i] = step.species.forces[i] +
-            step.species.charge * step.species.weights[i] * step.interp_func(
+            step.species.forces[i] = step.species.forces[i] .+
+            step.species.charge .* step.species.weights[i] .*
+                step.elec.values[I] .* step.interp_func(
                     interp_dist(step.elec, I, step.species.positions[i])
                 )
         end

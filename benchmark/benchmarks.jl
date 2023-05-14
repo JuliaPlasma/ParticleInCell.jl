@@ -1,5 +1,6 @@
 using ParticleInCell2
 using BenchmarkTools
+using StaticArrays
 
 # Set up some fields
 dimension = 2
@@ -14,11 +15,14 @@ Eedge = Field(g, ParticleInCell2.edge, 2)
 Enode = Field(g, ParticleInCell2.node, 2)
 
 # Create a species
-n_particles = 1000
-positions = rand(dimension, n_particles)
-momentums = fill(0., dimension, n_particles)
-forces =    fill(0., dimension, n_particles)
-weights =   fill(1., dimension, n_particles)
+n_particles = 100
+positions = Vector{SVector{2, Float64}}(undef, n_particles)
+for i in 1:n_particles
+    positions[i] = SVector(rand(2)...)
+end
+momentums = fill(SVector(0., 0.), n_particles)
+forces =    fill(SVector(0., 0.), n_particles)
+weights =   fill(0., n_particles)
 species = Species(positions, momentums, forces, weights, 1., 1.)
 
 const SUITE = BenchmarkGroup()
