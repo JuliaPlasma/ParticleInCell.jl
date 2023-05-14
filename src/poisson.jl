@@ -36,11 +36,11 @@ end
 
 function step!(::Any, step::PoissonSolveFFT)
     # TODO...
-    step.ft_vector .= step.rho.values[2:17, 2:17]
+    step.ft_vector .= view(step.rho.values, eachindex(step.rho))
     FFTW.fft!(step.ft_vector)
     step.ft_vector .= step.ft_vector .* step.Ksq_inv
     FFTW.ifft!(step.ft_vector)
-    step.phi.values[2:17, 2:17] .= real.(step.ft_vector)
+    view(step.phi.values, eachindex(step.rho)) .= real.(step.ft_vector)
 end
 
 # for i in 1:round(Int, 1 + num_cells / 2)
