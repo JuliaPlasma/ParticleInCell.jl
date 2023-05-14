@@ -6,7 +6,7 @@ using Aqua
 # fixed by using a construction like Tuple{T, Vararg{T, D1}} where D1 = D-1, but
 # this is annoying becasue I want the value of D as a type parameter in several
 # places. For now, I have just disabled the test.
-Aqua.test_all(ParticleInCell2, unbound_args=false)
+Aqua.test_all(ParticleInCell2, unbound_args = false)
 
 using ReTestItems
 runtests(ParticleInCell2)

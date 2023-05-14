@@ -1,13 +1,13 @@
-struct PoissonSolveFFT{T, D, G, P, F <: AbstractField} <: AbstractSimulationStep
+struct PoissonSolveFFT{T,D,G,P,F<:AbstractField} <: AbstractSimulationStep
     rho::F
     phi::F
 
-    Ksq_inv::Array{T, D}
-    ft_vector::Array{Complex{T}, D}
+    Ksq_inv::Array{T,D}
+    ft_vector::Array{Complex{T},D}
 
     fft_plan::P
 
-    function PoissonSolveFFT(rho::F, phi::F) where {T, D, G, F <: AbstractField{T, D, G}}
+    function PoissonSolveFFT(rho::F, phi::F) where {T,D,G,F<:AbstractField{T,D,G}}
         # This restriction could possibly be relaxed to just require compatible grids...
         @assert rho.grid === phi.grid
         # Currently only supports periodic boundary conditions...
@@ -16,7 +16,7 @@ struct PoissonSolveFFT{T, D, G, P, F <: AbstractField} <: AbstractSimulationStep
 
         epsilon_0 = 8.8541878128e-12
         # Ksq_inv = reshape(copy(rho.values), size(rho.values)[1:end-1]...)
-        Ksq_inv =   zeros(T, rho.grid.num_cells...)
+        Ksq_inv = zeros(T, rho.grid.num_cells...)
         ft_vector = zeros(Complex{T}, rho.grid.num_cells...)
 
         grid = rho.grid
@@ -27,15 +27,14 @@ struct PoissonSolveFFT{T, D, G, P, F <: AbstractField} <: AbstractSimulationStep
             It = Tuple(I)
             ks = 2π .* (It .- 1) ./ sim_lengths
             grid_angles = ks .* cell_lengths ./ 2
-            inv_Ksqs = (cell_lengths ./ (2 .* sin.(grid_angles))).^2 ./ epsilon_0
+            inv_Ksqs = (cell_lengths ./ (2 .* sin.(grid_angles))) .^ 2 ./ epsilon_0
 
             Ksq_inv[I] = prod(inv_Ksqs)
         end
 
         fft_plan = plan_fft!(ft_vector)
 
-        new{T, D, G, typeof(fft_plan), F}(
-            rho, phi, Ksq_inv, ft_vector, fft_plan)
+        new{T,D,G,typeof(fft_plan),F}(rho, phi, Ksq_inv, ft_vector, fft_plan)
     end
 end
 

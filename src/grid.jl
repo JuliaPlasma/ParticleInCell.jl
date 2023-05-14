@@ -22,18 +22,17 @@ abstract type AbstractGrid{D} end
 #    the field being used, and thus those are defined where the AbstractField
 #    types are defined.
 
-struct UniformCartesianGrid{D, T, U} <: AbstractGrid{D}
-    lower_bounds::NTuple{D, T}
-    upper_bounds::NTuple{D, T}
-    num_cells::NTuple{D, U}
-    periodic::NTuple{D, Bool}
+struct UniformCartesianGrid{D,T,U} <: AbstractGrid{D}
+    lower_bounds::NTuple{D,T}
+    upper_bounds::NTuple{D,T}
+    num_cells::NTuple{D,U}
+    periodic::NTuple{D,Bool}
 end
 
 # Modified from WaterLily.jl
-unit_vec(i,::Val{D}) where D = ntuple(j -> j==i ? 1 : 0, D)
-orth_vec(i,::Val{3}) = ntuple(j -> j==i ? 0 : 1, 3)
-orth_vec(::Any,::Union{Val{1}, Val{2}}) =
-    error("orth_vec only makes sense in 3D")
+unit_vec(i, ::Val{D}) where {D} = ntuple(j -> j == i ? 1 : 0, D)
+orth_vec(i, ::Val{3}) = ntuple(j -> j == i ? 0 : 1, 3)
+orth_vec(::Any, ::Union{Val{1},Val{2}}) = error("orth_vec only makes sense in 3D")
 
 @inline function cell_lengths(grid::UniformCartesianGrid)
     return (grid.upper_bounds .- grid.lower_bounds) ./ grid.num_cells
@@ -41,22 +40,23 @@ end
 
 # TODO: inline this function once the offsets become singltons, and this
 # function becomes performant
-function cell_coords_to_phys_coords(grid::UniformCartesianGrid{D}, idxs,
-    offset=node, component::Int=1) where {D}
+function cell_coords_to_phys_coords(
+    grid::UniformCartesianGrid{D},
+    idxs,
+    offset = node,
+    component::Int = 1,
+) where {D}
     node_coords = grid.lower_bounds .+ idxs .* cell_lengths(grid)
 
     if offset == node
         return node_coords
     elseif offset == edge
-        return node_coords .+ cell_lengths(grid) ./ 2 .*
-            unit_vec(component, D)
+        return node_coords .+ cell_lengths(grid) ./ 2 .* unit_vec(component, D)
     elseif offset == face
-        return node_coords .+ cell_lengths(grid) ./ 2 .*
-            orth_vec(component, D)
+        return node_coords .+ cell_lengths(grid) ./ 2 .* orth_vec(component, D)
     end
 end
 
 @inline function phys_coords_to_cell_coords(grid::UniformCartesianGrid, xs)
     return floor.(Int, (xs .- grid.lower_bounds) ./ cell_lengths(grid))
 end
-
