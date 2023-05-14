@@ -7,18 +7,18 @@ module ParticleInCell2
     include("species.jl")
     export UniformCartesianGrid, Field, Species
 
-    include("simulation.jl")
+    abstract type AbstractSimulationStep end
+    function step!(step::T) where {T <: AbstractSimulationStep}
+        error("step! not defined for type $T")
+    end
     export step!
+
+    include("field_utils.jl")
+    export FiniteDifferenceToEdges, AverageEdgesToNodes, CommunicateGuardCells
 
     include("poisson.jl")
     export PoissonSolveFFT
 
-    include("scatter.jl")
-    export BSplineChargeInterpolation
-
-    include("gather.jl")
-    export BSplineFieldInterpolation
-
-    include("field_utils.jl")
-    export FiniteDifferenceToEdges, AverageEdgesToNodes, CommunicateGuardCells
+    include("interpolation.jl")
+    export BSplineChargeInterpolation, BSplineFieldInterpolation
 end

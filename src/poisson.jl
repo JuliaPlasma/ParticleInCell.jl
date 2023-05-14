@@ -39,7 +39,7 @@ struct PoissonSolveFFT{T, D, G, P, F <: AbstractField} <: AbstractSimulationStep
     end
 end
 
-function step!(::Any, step::PoissonSolveFFT)
+function step!(step::PoissonSolveFFT)
     step.ft_vector .= view(step.rho.values, eachindex(step.rho))
     step.fft_plan * step.ft_vector
     step.ft_vector .= step.ft_vector .* step.Ksq_inv

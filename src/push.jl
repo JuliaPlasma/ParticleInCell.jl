@@ -3,7 +3,7 @@ struct SimpleParticlePush{S, T} <: AbstractSimulationStep
     timestep::T
 end
 
-function step!(::Any, step::SimpleParticlePush)
+function step!(step::SimpleParticlePush)
     species = step.species
 
     species.momentums .= species.momentums .+ step.timestep .* species.forces

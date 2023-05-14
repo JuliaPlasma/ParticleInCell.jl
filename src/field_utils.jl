@@ -15,7 +15,7 @@ struct FiniteDifferenceToEdges{F, NT} <: AbstractSimulationStep
     end
 end
 
-function step!(::Any, step::FiniteDifferenceToEdges{F}) where
+function step!(step::FiniteDifferenceToEdges{F}) where
     {T, D, F <: AbstractField{T, D}}
     nodal_field = step.nodal_field
     edge_field = step.edge_field
@@ -43,7 +43,7 @@ struct AverageEdgesToNodes{F} <: AbstractSimulationStep
     end
 end
 
-function step!(::Any, step::AverageEdgesToNodes{F}) where
+function step!(step::AverageEdgesToNodes{F}) where
     {T, D, F <: AbstractField{T, D}}
     edge_field = step.edge_field
     nodal_field = step.nodal_field
@@ -60,7 +60,7 @@ struct CommunicateGuardCells{F} <: AbstractSimulationStep
     field::F
 end
 
-function step!(::Any, step::CommunicateGuardCells{F}) where
+function step!(step::CommunicateGuardCells{F}) where
         {T, D, F <: AbstractField{T, D}}
     field = step.field
     grid = field.grid
