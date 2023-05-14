@@ -1,12 +1,10 @@
 abstract type AbstractSpecies end
 
-# TODO: switch to Vector{NTuple{D, T}}?
-
-struct Species{T} <: AbstractSpecies
-    positions::Array{T, 2}
-    momentums::Array{T, 2}
-    forces::Array{T, 2}
-    weights::Array{T, 2}
+struct Species{D, T} <: AbstractSpecies
+    positions::Vector{SVector{D, T}}
+    momentums::Vector{SVector{D, T}}
+    forces::Vector{SVector{D, T}}
+    weights::Vector{T}
     charge::T
     mass::T
 end

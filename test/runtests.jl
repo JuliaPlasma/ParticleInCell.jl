@@ -1,5 +1,6 @@
 using ParticleInCell2
 using Test
+using StaticArrays
 
 # @testset "ParticleInCell2.jl" begin
 #     # Write your tests here.
@@ -17,10 +18,13 @@ phi = Field(g, ParticleInCell2.node, 1)
 
 
 n_particles = 100
-positions = rand(dimension, n_particles)
-momentums = fill(0., dimension, n_particles)
-forces =    fill(0., dimension, n_particles)
-weights =   fill(1., dimension, n_particles)
+positions = Vector{SVector{2, Float64}}(undef, n_particles)
+for i in 1:n_particles
+    positions[i] = SVector(rand(2)...)
+end
+momentums = fill(SVector(0., 0.), n_particles)
+forces =    fill(SVector(0., 0.), n_particles)
+weights =   fill(0., n_particles)
 s = Species(positions, momentums, forces, weights, 1., 1.)
 
 b = BSplineChargeInterpolation(s, rho, 1)

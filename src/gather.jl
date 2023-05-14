@@ -38,18 +38,18 @@ function step!(::Any, step::BSplineFieldInterpolation)
     grid = step.elec.grid
     cell_sizes = cell_lengths(grid)
 
-    for i in axes(step.species.positions, 2)
+    for i in eachindex(step.species.positions)
         # Find which cell the particle is in, and create a CartesianIndices
         # object that extends +/- interp_width in all directions
         Is = phys_coords_to_cell_index_ittr(step.elec,
-            step.species.positions[:, i], step.interp_width)
+            step.species.positions[i], step.interp_width)
 
         # Iterate over nodes within the stencil, and compute the corresponding
         # charge for each node
         for I in Is
-            step.species.forces[i] += step.species.charge *
-                step.species.weights[i] * step.interp_func(
-                    interp_dist(step.elec, I, step.species.positions[:, i])
+            step.species.forces[i] = step.species.forces[i] +
+            step.species.charge * step.species.weights[i] * step.interp_func(
+                    interp_dist(step.elec, I, step.species.positions[i])
                 )
         end
     end

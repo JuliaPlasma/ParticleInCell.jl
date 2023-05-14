@@ -1,5 +1,6 @@
 module ParticleInCell2
     using FFTW
+    using StaticArrays
 
     include("grid.jl")
     include("field.jl")

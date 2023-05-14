@@ -48,7 +48,7 @@ end
 end
 
 @inline function cell_coords_to_cell_index(f::Field, idxs)
-    return CartesianIndex(idxs .+ f.index_offset)
+    return CartesianIndex(Tuple(idxs .+ f.index_offset))
 end
 
 @inline function cell_index_to_phys_coords(f::Field, I, offset=node,
@@ -58,8 +58,7 @@ end
 end
 
 @inline function phys_coords_to_cell_index_ittr(f::Field, xs, width::Int)
-    # TODO: Remove this first Tuple when Species starts using StaticArrays
-    cell_coords = Tuple(phys_coords_to_cell_coords(f.grid, xs))
+    cell_coords = phys_coords_to_cell_coords(f.grid, xs)
     cell_index = Tuple(cell_coords_to_cell_index(f, cell_coords))
     # Need to add one to lower bound to account for the fact that the particle
     # is 'in' the cell at cell_index.
