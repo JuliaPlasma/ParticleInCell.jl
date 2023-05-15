@@ -34,6 +34,10 @@ unit_vec(i, ::Val{D}) where {D} = ntuple(j -> j == i ? 1 : 0, D)
 orth_vec(i, ::Val{3}) = ntuple(j -> j == i ? 0 : 1, 3)
 orth_vec(::Any, ::Union{Val{1},Val{2}}) = error("orth_vec only makes sense in 3D")
 
+@inline function sim_lengths(grid::UniformCartesianGrid)
+    return (grid.upper_bounds .- grid.lower_bounds)
+end
+
 @inline function cell_lengths(grid::UniformCartesianGrid)
     return (grid.upper_bounds .- grid.lower_bounds) ./ grid.num_cells
 end

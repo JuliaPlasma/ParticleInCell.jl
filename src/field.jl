@@ -59,6 +59,14 @@ end
     )
 end
 
+@inline function Base.getindex(f::Field, I...)
+    return f.values[I...]
+end
+
+@inline function Base.setindex!(f::Field, v, I...)
+    f.values[I...] = v
+end
+
 @inline function cell_index_to_cell_coords(f::Field, I)
     return Tuple(I) .- f.index_offset
 end

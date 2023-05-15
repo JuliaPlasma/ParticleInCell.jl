@@ -21,4 +21,7 @@ export PoissonSolveFFT
 
 include("interpolation.jl")
 export BSplineChargeInterpolation, BSplineFieldInterpolation
+
+include("push.jl")
+export SimpleParticlePush, CommunicateSpecies
 end
