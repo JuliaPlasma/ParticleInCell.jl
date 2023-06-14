@@ -15,7 +15,7 @@ end
     return (grid.upper_bounds .- grid.lower_bounds)
 end
 
-@inline function cell_lengths(grid::UniformCartesianGrid, idxs=nothing)
+@inline function cell_lengths(grid::UniformCartesianGrid, idxs = nothing)
     return (grid.upper_bounds .- grid.lower_bounds) ./ grid.num_cells
 end
 
