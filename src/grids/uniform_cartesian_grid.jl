@@ -39,5 +39,5 @@ function cell_coords_to_phys_coords(
 end
 
 @inline function phys_coords_to_cell_coords(grid::UniformCartesianGrid, xs)
-    return floor.(Int, (xs .- grid.lower_bounds) ./ cell_lengths(grid))
+    return (xs .- grid.lower_bounds) ./ cell_lengths(grid)
 end

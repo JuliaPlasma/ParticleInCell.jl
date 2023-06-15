@@ -165,7 +165,7 @@ function step!(step::BSplineChargeInterpolation)
             grid_cell_coord = cell_index_to_cell_coords(step.rho, I)
             step.rho.values[I] +=
                 step.species.charge * step.species.weights[i] / cell_volume *
-                prod(step.interp_func.(grid_cell_coord .- particle_cell_coord))
+                prod(step.interp_func.(particle_cell_coord .- grid_cell_coord ))
         end
     end
 end
@@ -211,7 +211,7 @@ function step!(step::BSplineFieldInterpolation)
             step.species.forces[n] =
                 step.species.forces[n] .+
                 step.species.charge .* step.species.weights[n] .* step.elec.values[I] .*
-                prod(step.interp_func.(grid_cell_coord .- particle_cell_coord))
+                prod(step.interp_func.(particle_cell_coord .- grid_cell_coord ))
         end
     end
 end

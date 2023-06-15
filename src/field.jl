@@ -72,7 +72,7 @@ end
 end
 
 @inline function cell_coords_to_cell_index(f::Field, idxs)
-    return CartesianIndex(Tuple(idxs .+ f.index_offset))
+    return CartesianIndex(Tuple(floor.(Int, idxs) .+ f.index_offset))
 end
 
 @inline function cell_index_to_phys_coords(f::Field, I, offset = node, component::Int = 1)

@@ -6,7 +6,7 @@
         amps = abs.(fft(xs))
         amps[1] = 0
         max_index = findmax(amps)[2]
-        return fftfreq(length(xs), 1 / dt)[max_index]
+        return fftfreq(length(xs), 1 / dt)[max_index] * 2pi
     end
 
     function compute_plasma_freq(nom_density)
@@ -23,7 +23,7 @@
         dx = sim_length / num_cells
         num_particles = num_cells * 10
         particles_per_macro = nom_density * sim_length / num_particles
-        dt = 1e-9
+        dt = 1.11e-11 * 2
         n_steps = 1000
         k = 1
         amplitude = 1e3
@@ -101,6 +101,7 @@
         return max_freq / 2
     end
 
-    @test_broken compute_plasma_freq(1e10) == simulate_plamsa_freq(1e10)
-    @test_broken compute_plasma_freq(1e11) == simulate_plamsa_freq(1e11)
+    # Allow a 10% error
+    @test isapprox(compute_plasma_freq(1e14), simulate_plamsa_freq(1e14), rtol=0.1)
+    @test isapprox(compute_plasma_freq(1e15), simulate_plamsa_freq(1e15), rtol=0.1)
 end
