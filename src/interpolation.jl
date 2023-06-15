@@ -72,7 +72,7 @@ function binomial_expand(coeffs, const_term)
     return new_coeffs
 end
 
-function create_bspline_interp_expr(degree)
+macro create_bspline_interp_func(degree)
     knots = compute_knots(degree)
     coeffs = compute_bspline_coeffs(degree)
     exprs = Expr[]
@@ -92,7 +92,39 @@ function create_bspline_interp_expr(degree)
     for ex in exprs
         push!(stripped_exprs, ex.args[2])
     end
-    return Expr(:function, Expr(:tuple, :xs), Expr(:block, stripped_exprs...))
+    func_name = Symbol("bs_interp" * string(degree))
+    return Expr(:function, Expr(:call, func_name, :xs), Expr(:block, stripped_exprs...))
+end
+
+@create_bspline_interp_func(0)
+@create_bspline_interp_func(1)
+@create_bspline_interp_func(2)
+@create_bspline_interp_func(3)
+@create_bspline_interp_func(4)
+@create_bspline_interp_func(5)
+@create_bspline_interp_func(6)
+@create_bspline_interp_func(7)
+
+function select_bs_interp(degree)
+    if degree == 0
+        return bs_interp0
+    elseif degree == 1
+        return bs_interp1
+    elseif degree == 2
+        return bs_interp2
+    elseif degree == 3
+        return bs_interp3
+    elseif degree == 4
+        return bs_interp4
+    elseif degree == 5
+        return bs_interp5
+    elseif degree == 6
+        return bs_interp6
+    elseif degree == 7
+        return bs_interp7
+    else
+        throw("unsupported b-spline interpolation degree " * string(degree))
+    end
 end
 
 struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
@@ -108,7 +140,7 @@ struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
         @assert rho.offset == node
 
         interp_width = div(bspline_degree, 2) + 1
-        interp_func = eval(create_bspline_interp_expr(bspline_degree))
+        interp_func = select_bs_interp(bspline_degree)
 
         new{S,F,typeof(interp_func)}(species, rho, bspline_degree, interp_width, interp_func)
     end
@@ -121,7 +153,7 @@ function step!(step::BSplineChargeInterpolation)
     for i in eachindex(step.species.positions)
         # Find which cell the particle is in, and create a CartesianIndices
         # object that extends +/- interp_width in all directions
-        Is = phys_coords_to_cell_index_ittr(
+        particle_cell_coord, Is = phys_coords_to_cell_index_ittr(
             step.rho,
             step.species.positions[i],
             step.interp_width,
@@ -130,9 +162,10 @@ function step!(step::BSplineChargeInterpolation)
         # Iterate over nodes within the stencil, and compute the corresponding
         # charge for each node
         for I in Is
+            grid_cell_coord = cell_index_to_cell_coords(step.rho, I)
             step.rho.values[I] +=
                 step.species.charge * step.species.weights[i] / cell_volume *
-                step.interp_func(interp_dist(step.rho, I, step.species.positions[i])[1])
+                prod(step.interp_func.(grid_cell_coord .- particle_cell_coord))
         end
     end
 end
@@ -151,7 +184,7 @@ struct BSplineFieldInterpolation{S,F,IF} <: AbstractSimulationStep
         @assert elec.offset == node
 
         interp_width = div(bspline_degree, 2) + 1
-        interp_func = eval(create_bspline_interp_expr(bspline_degree))
+        interp_func = select_bs_interp(bspline_degree)
 
         new{S,F,typeof(interp_func)}(
             species,
@@ -167,17 +200,18 @@ function step!(step::BSplineFieldInterpolation)
     for n in eachindex(step.species.positions)
         # Find which cell the particle is in, and create a CartesianIndices
         # object that extends +/- interp_width in all directions
-        Is = phys_coords_to_cell_index_ittr(
+        particle_cell_coord, Is = phys_coords_to_cell_index_ittr(
             step.elec,
             step.species.positions[n],
             step.interp_width,
         )
 
         for I in Is
+            grid_cell_coord = cell_index_to_cell_coords(step.elec, I)
             step.species.forces[n] =
                 step.species.forces[n] .+
                 step.species.charge .* step.species.weights[n] .* step.elec.values[I] .*
-                step.interp_func(interp_dist(step.elec, I, step.species.positions[n])[1])
+                prod(step.interp_func.(grid_cell_coord .- particle_cell_coord))
         end
     end
 end

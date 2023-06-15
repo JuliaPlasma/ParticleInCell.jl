@@ -87,10 +87,5 @@ end
     # is 'in' the cell at cell_index.
     low_bounds = cell_index .- width .+ 1
     high_bounds = cell_index .+ width
-    return CartesianIndices(Tuple(UnitRange.(low_bounds, high_bounds)))
-end
-
-@inline function interp_dist(f::Field, I::CartesianIndex, xs)
-    grid_pos = cell_index_to_phys_coords(f, I)
-    return (xs .- grid_pos) ./ cell_lengths(f.grid)
+    return cell_coords, CartesianIndices(Tuple(UnitRange.(low_bounds, high_bounds)))
 end
