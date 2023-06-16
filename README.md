@@ -2,9 +2,7 @@
 
 ## Todo:
  * Add examples
-   * Langmuir oscillation (check that frequency is correct)
    * Two-stream instability (check frequency)
- * Add CommunicateParticles step (apply periodic boundary conditions)
  * Add LinearFieldSolve step
    * Figure out a flexible way to enable stencil definitions
  * Add dump/restore abilities. Possible interface
@@ -23,3 +21,8 @@
    * dump
    * restore
    * Need to come up with some nice way to systematically test these...
+ * Add the ability to have subdomains
+   * Locally, subdomains should be processed in parallel using Julia's coroutine,
+   * Should also have 'ghost subdomains' that refer to a subdomain that is not on
+     the current node. Then the communicate steps can use MPI to communicate ghost
+     cells off node.
