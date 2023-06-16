@@ -75,19 +75,28 @@ end
 macro create_bspline_interp_func(degree)
     knots = compute_knots(degree)
     coeffs = compute_bspline_coeffs(degree)
+    tuple_coeffs = NTuple{length(coeffs[1]),eltype(coeffs[1])}[]
+    for i in eachindex(coeffs)
+        push!(tuple_coeffs, tuple(coeffs[i]...))
+    end
+
     exprs = Expr[]
     push!(exprs, quote
         if abs(xs) > $(knots[end])
-            return 0
+            return $(zero(tuple_coeffs[1][1]))
         end
     end)
-    for i in 2:length(knots)
+    for i = 2:length(knots)-1
         push!(exprs, quote
             if xs <= $(knots[i])
-                return poly_eval($(coeffs[i - 1]), xs)
+                return poly_eval($(tuple_coeffs[i-1]), xs)
             end
         end)
     end
+    push!(exprs, quote
+        return poly_eval($(tuple_coeffs[end]), xs)
+    end)
+
     stripped_exprs = Expr[]
     for ex in exprs
         push!(stripped_exprs, ex.args[2])
@@ -142,7 +151,13 @@ struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
         interp_width = div(bspline_degree, 2) + 1
         interp_func = select_bs_interp(bspline_degree)
 
-        new{S,F,typeof(interp_func)}(species, rho, bspline_degree, interp_width, interp_func)
+        new{S,F,typeof(interp_func)}(
+            species,
+            rho,
+            bspline_degree,
+            interp_width,
+            interp_func,
+        )
     end
 end
 
@@ -163,9 +178,11 @@ function step!(step::BSplineChargeInterpolation)
         # charge for each node
         for I in Is
             grid_cell_coord = cell_index_to_cell_coords(step.rho, I)
+            dist = Tuple(particle_cell_coord .- grid_cell_coord)
+            interp_weights = step.interp_func.(dist)
+            interp_weight = prod(interp_weights)
             step.rho.values[I] +=
-                step.species.charge * step.species.weights[i] / cell_volume *
-                prod(step.interp_func.(particle_cell_coord .- grid_cell_coord ))
+                step.species.charge * step.species.weights[i] / cell_volume * interp_weight
         end
     end
 end
@@ -208,10 +225,13 @@ function step!(step::BSplineFieldInterpolation)
 
         for I in Is
             grid_cell_coord = cell_index_to_cell_coords(step.elec, I)
+            dist = Tuple(particle_cell_coord .- grid_cell_coord)
+            interp_weights = step.interp_func.(dist)
+            interp_weight = prod(interp_weights)
             step.species.forces[n] =
                 step.species.forces[n] .+
                 step.species.charge .* step.species.weights[n] .* step.elec.values[I] .*
-                prod(step.interp_func.(particle_cell_coord .- grid_cell_coord ))
+                interp_weight
         end
     end
 end

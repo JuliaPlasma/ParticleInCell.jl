@@ -52,6 +52,11 @@
         grid2 = UniformCartesianGrid((0.0, 0.0), (1.0, 1.0), (10, 10), (true, true))
         @test ParticleInCell2.phys_coords_to_cell_coords(grid1, (0, 0)) == (0, 0)
         @test ParticleInCell2.phys_coords_to_cell_coords(grid1, (1.0, 1.0)) == (10, 10)
-        @test all(isapprox.(ParticleInCell2.phys_coords_to_cell_coords(grid1, (1.15, 1.25)), (11.5, 12.5)))
+        @test all(
+            isapprox.(
+                ParticleInCell2.phys_coords_to_cell_coords(grid1, (1.15, 1.25)),
+                (11.5, 12.5),
+            ),
+        )
     end
 end

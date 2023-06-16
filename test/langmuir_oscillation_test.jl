@@ -102,6 +102,6 @@
     end
 
     # Allow a 10% error
-    @test isapprox(compute_plasma_freq(1e14), simulate_plamsa_freq(1e14), rtol=0.1)
-    @test isapprox(compute_plasma_freq(1e15), simulate_plamsa_freq(1e15), rtol=0.1)
+    @test isapprox(compute_plasma_freq(1e14), simulate_plamsa_freq(1e14), rtol = 0.1)
+    @test isapprox(compute_plasma_freq(1e15), simulate_plamsa_freq(1e15), rtol = 0.1)
 end
