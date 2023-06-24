@@ -15,9 +15,13 @@ s.global_env.project_deps = collect(keys(s.global_env.symbols))
 f = StaticLint.loadfile(s, root_file)
 StaticLint.semantic_pass(LanguageServer.getroot(f))
 
-errors = Tuple{String, LanguageServer.Diagnostic}[]
+errors = Tuple{String,LanguageServer.Diagnostic}[]
 for doc in LanguageServer.getdocuments_value(s)
-    StaticLint.check_all(LanguageServer.getcst(doc), s.lint_options, LanguageServer.getenv(doc, s))
+    StaticLint.check_all(
+        LanguageServer.getcst(doc),
+        s.lint_options,
+        LanguageServer.getenv(doc, s),
+    )
     LanguageServer.mark_errors(doc, doc.diagnostics)
 
     for d in doc.diagnostics
@@ -26,5 +30,5 @@ for doc in LanguageServer.getdocuments_value(s)
 end
 
 for (file, error) in errors
-    @warn error.code msg=(error.message) _file=file _line=(error.range.start.line)
+    @warn error.code msg = (error.message) _file = file _line = (error.range.start.line)
 end
