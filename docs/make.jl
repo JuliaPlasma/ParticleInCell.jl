@@ -8,7 +8,7 @@ makedocs(
     pages = [
         "index.md",
         "Tutorials" => [
-            "tutorials/index.md" => "Listing of tutorials",
+            "Listing of tutorials" => "tutorials/index.md",
             "tutorials/langmuir_oscillation.md"
         ],
         "how_to/index.md",

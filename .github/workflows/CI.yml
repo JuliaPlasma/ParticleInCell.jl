@@ -34,6 +34,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
   docs:
+    name: Build documentation
     permissions:
       contents: write
     runs-on: ubuntu-latest
