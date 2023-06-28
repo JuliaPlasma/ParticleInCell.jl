@@ -1,28 +1,55 @@
-# ParticleInCell2
+# ParticleInCell2.jl
+Add badges: docs, test status, code coverage
 
-## Todo:
- * Add examples
+`ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
+Currently, this package is in in a pre-1.0.0 state, and thus breaking changes
+should be expected. However, this also means that I am willing to entertain
+radical suggestions to improve the functionality of the package. If you are
+interested in using `ParticleInCell2` for your plasma research, and you find
+that it does not meet you needs, please reach out on either GitHub, or over
+email, so that we can discuss how the package can be modified to suite your
+needs.
+
+## Goals
+ * Fast: aim to have core time of less than 1 microsecond per particle per step
+   without collisions.
+ * Flexible: it should be possible to implement essentially any kinetic plasma
+   simulation in `ParticleInCell2.jl`. For common types of simulations, this
+   might mean just piecing together components that are already included. More
+   esoteric problems might require writing custom types that implement the
+   desired algorithms. The advantage of writing this package in Julia is that
+   these custom types will be just as performant as native components that are
+   included in the package.
+ * Scalable: the eventual goal is to enable scaling across an essentially
+   unlimited number of cores using Julia's native multithreading for
+   parallelization on a single node, and `MPI.jl` for communication across
+   nodes. The goal is to support two different modes of parallelization:
+   * Each core is responsible for a single rectangular subdomain. The domain
+     assigned to an entire node is also rectangular, which imposes constraints
+     on how the node domain can be subdivided into subdomains for each core.
+     Load balancing is achieved by varying the relative sizes of the domains
+     such that each core has a similar amount of work per step.
+   * The simulation domain is subdivided into subdomains called 'patches', and
+     every node is assigned a list of patches that it is responsible for
+     updating. The cores on each node work collaboratively on the list, each
+     choosing one patch to work on, and then selecting another when they are
+     finished. Load balancing is achieved by swapping patches between nodes to
+     balance the workload while also seeking to minimize communication time by
+     keeping the surface area of each node's responsibilities minimized. In
+     order for this scheme to effectively load balance, it must be the case that
+     the total number of patches is larger (ideally much larger) that the total
+     number of cores.
+
+## Todo
+ * New examples:
    * Two-stream instability (check frequency)
- * Add LinearFieldSolve step
-   * Figure out a flexible way to enable stencil definitions
- * Add dump/restore abilities. Possible interface
-   * dump(obj, dump_prefix::String, dump_num::Int) must produce a file
-         {dump_prefix}_{obj_name}_{dump_num}.h5
-     If an object does not change state over the course of the simulation, it is
-     ok to ignore further dumps.
-   * restore(::Type{ObjType}, dump_prefix::String, dump_num::Int)
-     restore(::Type{ObjType}, file::H5File)
-     Objects should be required to write there type to an attribute in the H5
-     file, so that a restore program can read it
-   * How much should I require the simulation to be restored only from on disk
-     data vs require the original simulation file to be avaliable too?
- * AbstractUpdateStep interface:
-   * step!(obj, dt) -- should I include dt? Should definitely get rid of sim
-   * dump
-   * restore
-   * Need to come up with some nice way to systematically test these...
- * Add the ability to have subdomains
-   * Locally, subdomains should be processed in parallel using Julia's coroutine,
-   * Should also have 'ghost subdomains' that refer to a subdomain that is not on
-     the current node. Then the communicate steps can use MPI to communicate ghost
-     cells off node.
+   * Capacitively coupled plasma
+   * EM radiation from a dipole antenna
+ * Add `LinearFieldSolve` step
+   * Figure out a flexible way to define a stencil
+ * Get rid of force field in Species, and incorporate the field interpolation into
+   the particle push?
+   * Add Boris push
+ * Add electromagnetic update step
+ * Add Monte-Carlo collisions
+
