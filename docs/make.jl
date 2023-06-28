@@ -16,3 +16,7 @@ makedocs(
         "reference/index.md",
     ],
 )
+
+deploydocs(
+    repo = "github.com/adamslc/ParticleInCell2.jl.git",
+)
