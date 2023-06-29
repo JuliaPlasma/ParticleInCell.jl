@@ -7,7 +7,7 @@ end
 using Pkg
 Pkg.instantiate()
 
-using Coverage
+using CoverageTools
 clean_folder("src")
 clean_folder("test")
 # clean_folder("ext")
