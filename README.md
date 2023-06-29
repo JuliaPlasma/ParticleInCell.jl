@@ -1,5 +1,8 @@
 # ParticleInCell2.jl
-Add badges: docs, test status, code coverage
+<!-- [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://USER_NAME.github.io/PACKAGE_NAME.jl/stable) -->
+[![Dev docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://adamslc.github.io/ParticleInCell2.jl/dev)
+![Test status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)
+[![codecov.io](http://codecov.io/github/adamslc/ParticleInCell2.jl/coverage.svg?branch=main)](http://codecov.io/github/adamslc/ParticleInCell2.jl?branch=main)
 
 `ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
 Currently, this package is in in a pre-1.0.0 state, and thus breaking changes
