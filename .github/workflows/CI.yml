@@ -37,9 +37,10 @@ jobs:
         with:
           directories: 'src,ext'
       - uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           file: lcov.info
-          env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   docs:
     name: Build documentation
     permissions:
