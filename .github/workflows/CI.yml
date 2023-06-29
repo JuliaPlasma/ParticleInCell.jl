@@ -32,6 +32,21 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
+
+      - uses: adamslc/julia-runtest@main
+        with:
+          test_arg: basics
+      - uses: julia-actions/julia-processcoverage@v1
+        with:
+          directories: 'src,ext'
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: lcov.info
+          flags: basics
+      - name: Clean up .cov files
+        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
+
       - uses: adamslc/julia-runtest@main
         with:
           test_arg: unit
@@ -43,6 +58,23 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: lcov.info
           flags: unit
+      - name: Clean up .cov files
+        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
+
+      - uses: adamslc/julia-runtest@main
+        with:
+          test_arg: integration
+      - uses: julia-actions/julia-processcoverage@v1
+        with:
+          directories: 'src,ext'
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: lcov.info
+          flags: integration
+      - name: Clean up .cov files
+        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
+
   docs:
     name: Build documentation
     permissions:
