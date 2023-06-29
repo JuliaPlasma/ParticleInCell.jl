@@ -1,7 +1,7 @@
 directory = basename(pwd())
 if !(directory in ["ParticleInCell2", "ParticleInCell2.jl"])
-	@error "Script should be run the project root directory"
-	exit(1)
+    @error "Script should be run the project root directory"
+    exit(1)
 end
 
 using Pkg

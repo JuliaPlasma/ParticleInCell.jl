@@ -1,4 +1,4 @@
-@testitem "BSplineChargeInterpolation" tags=[:unit] begin
+@testitem "BSplineChargeInterpolation" tags = [:unit] begin
     using StaticArrays
 
     function sum_charge(rho)
@@ -20,7 +20,7 @@
     @test sum_charge(rho) == 1
 end
 
-@testitem "b-spline basics" tags=[:unit] begin
+@testitem "b-spline basics" tags = [:unit] begin
     import ParticleInCell2:
         poly_integrate, binomial_expand, compute_knots, compute_bspline_coeffs
 
