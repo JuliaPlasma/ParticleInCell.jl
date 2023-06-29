@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: adamslc/julia-runtest
+      - uses: adamslc/julia-runtest@main
         with:
           test_arg: unit
       - uses: julia-actions/julia-processcoverage@v1
