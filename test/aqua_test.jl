@@ -1,4 +1,4 @@
-@testitem "Aqua" begin
+@testitem "Aqua" tags=[:basics] begin
     using Aqua
     # The unbound_args test currently has a false positive, because it thinks the grid
     # might be zero dimensional, in wich case T and U would be unbound. This could be

@@ -32,14 +32,17 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+      - name: Run unit tests
+        uses: adamslc/julia-runtest@v1
+        with:
+          test_arg: unit
       - uses: julia-actions/julia-processcoverage@v1
         with:
           directories: 'src,ext'
+          flags: unit
       - uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: lcov.info
   docs:
     name: Build documentation

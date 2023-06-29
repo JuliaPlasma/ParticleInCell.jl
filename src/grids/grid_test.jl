@@ -1,4 +1,4 @@
-@testitem "UniformCartesianGrid" begin
+@testitem "UniformCartesianGrid" tags=[:unit] begin
     @testset "cell_coords_to_phys_coords" begin
         grid = UniformCartesianGrid(
             (0.0, 0.0, 0.0),

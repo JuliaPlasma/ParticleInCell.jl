@@ -1,4 +1,4 @@
-@testitem "Langmuir Oscillation" begin
+@testitem "Langmuir Oscillation" tags=[:integration] begin
     using StaticArrays
     using FFTW
 
