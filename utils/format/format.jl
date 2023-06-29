@@ -8,4 +8,4 @@ using Pkg
 Pkg.instantiate()
 
 using JuliaFormatter
-format(".", verbose=true)
+format(".", verbose = true)
