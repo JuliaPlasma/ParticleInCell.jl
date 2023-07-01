@@ -15,7 +15,7 @@ package can be modified to suite your needs.
 
 ## Getting Started
 `ParticleInCell2` is currently not registered in the Julia package registry.
-Thus, to install this package, you should `dev` it:
+Thus, to install this package, you should use `Pkg.develop`:
 ```julia
 using Pkg
 Pkg.develop(url="https://github.com/adamslc/ParticleInCell2.jl")
@@ -54,17 +54,3 @@ You can view the latest documentation
      order for this scheme to effectively load balance, it must be the case that
      the total number of patches is larger (ideally much larger) that the total
      number of cores.
-
-## Todo
- * New examples:
-   * Two-stream instability (check frequency)
-   * Capacitively coupled plasma
-   * EM radiation from a dipole antenna
- * Add `LinearFieldSolve` step
-   * Figure out a flexible way to define a stencil
- * Get rid of force field in Species, and incorporate the field interpolation into
-   the particle push?
-   * Add Boris push
- * Add electromagnetic update step
- * Add Monte-Carlo collisions
-
