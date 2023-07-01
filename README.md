@@ -5,13 +5,14 @@
 [![codecov.io](http://codecov.io/github/adamslc/ParticleInCell2.jl/coverage.svg?branch=main)](http://codecov.io/github/adamslc/ParticleInCell2.jl?branch=main)
 
 `ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
-Currently, this package is in in a pre-1.0.0 state, and thus breaking changes
-should be expected. However, this also means that I am willing to entertain
-radical suggestions to improve the functionality of the package. If you are
-interested in using `ParticleInCell2` for your plasma research, and you find
-that it does not meet you needs, please reach out on either GitHub, or over
-email, so that we can discuss how the package can be modified to suite your
-needs.
+Specifically, it focuses on the simulation of kinetic (non-thermal) plasmas
+using particle-in-cell (PIC) algorithms. Currently, this package is in in a
+pre-1.0.0 state, and thus breaking changes should be expected. However, this
+also means that I am willing to entertain radical suggestions to improve the
+functionality of the package. If you are interested in using `ParticleInCell2`
+for your plasma research, and you find that it does not meet you needs, please
+reach out on either GitHub, or over email, so that we can discuss how the
+package can be modified to suite your needs.
 
 ## Getting Started
 `ParticleInCell2` is currently not registered in the Julia package registry.
