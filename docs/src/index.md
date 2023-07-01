@@ -3,10 +3,11 @@ ParticleInCell2
 ```
 
 ## Documentation sections
-The `ParticleInCell2` documentation is divided into the following sections:
-- [Tutorials](@ref): step-by-step guides for basic package functionality.
-- [How-to Guides](@ref): more complex examples of package capabilities.
-- [Discussions](@ref): overviews of plasma simulation in general, and the specific
-  design of the `ParticleInCell2` package.
-- [Reference Manual](@ref): detailed description of each public function and
-  type in the package.
+To get started, look at the [Tutorial](@ref), which includes step-by-step
+instructions for running your first simulation using `ParticleInCell2`. After
+that, you may want to browse the [Example Gallery](@ref), to see other problems
+that this package can be used to solve. The [Plasma Simulation Theory](@ref)
+section contains information about the art of computational plasma physics, and
+the numerical constraints that require the specialized tools developed here.
+Finally, the [Reference Manual](@ref) contains detailed information about the
+entire public interface of the package.

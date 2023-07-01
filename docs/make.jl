@@ -4,13 +4,10 @@ makedocs(
     sitename = "ParticleInCell2.jl Documentation",
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     pages = [
-        "index.md",
-        "Tutorials" => [
-            "Listing of tutorials" => "tutorials/index.md",
-            "tutorials/langmuir_oscillation.md",
-        ],
-        "how_to/index.md",
-        "discussion/index.md",
+        "Introduction" => "index.md",
+        "Tutorial" => "tutorial.md",
+        "examples/index.md",
+        "theory/index.md",
         "reference/index.md",
     ],
 )
