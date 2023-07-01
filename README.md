@@ -1,8 +1,7 @@
 # ParticleInCell2.jl
-<!-- [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://USER_NAME.github.io/PACKAGE_NAME.jl/stable) -->
-[![Dev docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://adamslc.github.io/ParticleInCell2.jl/dev)
-[![CI](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
-[![codecov.io](http://codecov.io/github/adamslc/ParticleInCell2.jl/coverage.svg?branch=main)](http://codecov.io/github/adamslc/ParticleInCell2.jl?branch=main)
+[![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://adamslc.github.io/ParticleInCell2.jl/dev)
+[![CI Status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
+[![Code Coverage Statistics](http://codecov.io/github/adamslc/ParticleInCell2.jl/coverage.svg?branch=main)](http://codecov.io/github/adamslc/ParticleInCell2.jl?branch=main)
 
 `ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
 Specifically, it focuses on the simulation of kinetic (non-thermal) plasmas
