@@ -1,3 +1,4 @@
+# ParticleInCell2.jl
 ```@docs
 ParticleInCell2
 ```

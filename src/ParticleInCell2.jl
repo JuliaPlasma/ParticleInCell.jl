@@ -4,7 +4,11 @@ module ParticleInCell2
 @doc let
     path = joinpath(dirname(@__DIR__), "README.md")
     include_dependency(path)
-    read(path, String)
+    readme_str = read(path, String)
+
+    # Get rid of the title and badges
+    index = last(findfirst("\n\n", readme_str)) + 1
+    readme_str[index:end]
 end ParticleInCell2
 
 using FFTW

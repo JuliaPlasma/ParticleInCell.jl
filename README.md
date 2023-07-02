@@ -3,7 +3,6 @@
 [![CI Status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
 [![Code Coverage Statistics](https://codecov.io/gh/adamslc/ParticleInCell2.jl/branch/main/graph/badge.svg)](http://codecov.io/github/adamslc/ParticleInCell2.jl)
 
-
 `ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
 Specifically, it focuses on the simulation of kinetic (non-thermal) plasmas
 using particle-in-cell (PIC) algorithms. Currently, this package is in in a
