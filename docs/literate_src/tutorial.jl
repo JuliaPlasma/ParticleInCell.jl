@@ -230,4 +230,4 @@ theory_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
 # As you can see, these two results agree fairly closely, indicating that our
 # simulation has captured the essential physics that the theory predicts.
 using Test
-@test isapprox(1, 1.001, rtol = 0.1)
+@test isapprox(plasma_freq, theory_plasma_freq, rtol = 0.1)
