@@ -1,4 +1,4 @@
-# Reference Manual
+# Manual
 
 ```@autodocs
 Modules = [ParticleInCell2]

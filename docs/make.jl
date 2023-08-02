@@ -1,4 +1,4 @@
-using Documenter, Literate, ParticleInCell2
+using Documenter, DocumenterCitations, Literate, ParticleInCell2
 
 @info "Generating tutorial materials from Literate script"
 tutorial_path = joinpath(@__DIR__, "literate_src", "tutorial.jl")
@@ -8,15 +8,25 @@ Literate.notebook(tutorial_path, output_path, documenter = true)
 Literate.script(tutorial_path, output_path, documenter = true)
 
 @info "Making docs"
+bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"), style = :authoryear)
+
 makedocs(
+    bib,
     sitename = "ParticleInCell2.jl Documentation",
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        assets = String["assets/citations.css"],
+    ),
     pages = [
         "Introduction" => "index.md",
         "Tutorial" => "tutorial.md",
         "examples/index.md",
-        "theory/index.md",
+        "Plasma simulation theory" => [
+            "Introduction" => "theory/index.md",
+            "PIC simulation" => "theory/intro_to_pic.md",
+        ],
         "reference/index.md",
+        "references.md",
     ],
 )
 
