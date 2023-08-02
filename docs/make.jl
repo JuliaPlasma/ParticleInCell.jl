@@ -1,4 +1,7 @@
-using Pkg, Documenter, DocumenterCitations, Literate, ParticleInCell2
+using Pkg
+using Documenter, DocumenterCitations, DemoCards
+using Literate
+using ParticleInCell2
 
 @info "Generating tutorial materials from Literate script"
 tutorial_path = joinpath(@__DIR__, "literate_src", "tutorial.jl")
@@ -6,6 +9,9 @@ output_path = joinpath(@__DIR__, "src")
 Literate.markdown(tutorial_path, output_path, documenter = true)
 Literate.notebook(tutorial_path, output_path, documenter = true)
 Literate.script(tutorial_path, output_path, documenter = true)
+
+@info "Generating examples using DemoCards"
+examples_page, postprocess_democard_cb, demo_assets = makedemos("literate_src/examples")
 
 @info "Gathering information from Project.toml"
 PROJECT_TOML = Pkg.TOML.parsefile(joinpath(@__DIR__, "..", "Project.toml"))
@@ -17,19 +23,22 @@ GITHUB = "https://github.com/adamslc/ParticleInCell2.jl"
 @info "Making docs"
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"), style = :authoryear)
 
+assets = ["assets/citations.css"]
+isnothing(demo_assets) || (push!(assets, demo_assets))
+
 makedocs(
     bib,
     authors = AUTHORS,
     sitename = "ParticleInCell2.jl Documentation",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        assets = String["assets/citations.css"],
+        assets = assets,
         footer = "[$NAME.jl]($GITHUB) v$VERSION",
     ),
     pages = [
         "Introduction" => "index.md",
         "Tutorial" => "tutorial.md",
-        "examples/index.md",
+        examples_page,
         "Plasma simulation theory" => [
             "Introduction" => "theory/index.md",
             "PIC simulation" => "theory/intro_to_pic.md",
@@ -39,6 +48,9 @@ makedocs(
     ],
     strict = get(ENV, "CI", nothing) == "true",
 )
+
+@info "Postprocessing DemoCards"
+postprocess_democard_cb()
 
 @info "Deploying docs"
 deploydocs(repo = "github.com/adamslc/ParticleInCell2.jl.git")
