@@ -40,5 +40,3 @@ In the following sections, we describe the details of particle-in-cell
 algorithms, a specific type of kinetic simulation algorithm. For a more in
 depth introduction of PIC simulation theory, see the books by
 [birdsall2004](@citet) and [hockney1989](@citet).
-
-[Introduction to particle-in-cell simulation](@ref)
