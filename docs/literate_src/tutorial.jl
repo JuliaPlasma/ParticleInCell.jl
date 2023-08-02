@@ -164,9 +164,11 @@ CairoMakie.activate!(type = "svg")
 
 # We can then plot the field energy.
 times = collect(range(1, n_steps)) .* dt
-lines(times, electric_field_energy;
-    axis = (; title = "Electric Field Energy",
-        xlabel = "Time (s)", ylabel = "Energy"))
+lines(
+    times,
+    electric_field_energy;
+    axis = (; title = "Electric Field Energy", xlabel = "Time (s)", ylabel = "Energy"),
+)
 
 # Notice that the electric field energy is slowly growing over time. This is a
 # result of the "grid-heating instability". In this instability, a plasma with
@@ -185,16 +187,28 @@ using FFTW
 freqs = fftfreq(n_steps, 1 / dt) .* 2pi
 freq_amps = abs.(fft(electric_field_energy))
 
-lines(freqs, freq_amps;
-    axis = (; title = "Electric Field Energy Frequency Spectrum",
-        xlabel = "Frequency (1/s)", ylabel = "Amplitude"))
+lines(
+    freqs,
+    freq_amps;
+    axis = (;
+        title = "Electric Field Energy Frequency Spectrum",
+        xlabel = "Frequency (1/s)",
+        ylabel = "Amplitude",
+    ),
+)
 
 # It is hard to see what is happening at the low frequencies, so let's zoom
 # in on the positive low frequencies.
 cutoff_index = round(Int, n_steps * 0.05)
-lines(freqs[1:cutoff_index], freq_amps[1:cutoff_index];
-    axis = (; title = "Electric Field Energy Frequency Spectrum",
-        xlabel = "Frequency (1/s)", ylabel = "Amplitude"))
+lines(
+    freqs[1:cutoff_index],
+    freq_amps[1:cutoff_index];
+    axis = (;
+        title = "Electric Field Energy Frequency Spectrum",
+        xlabel = "Frequency (1/s)",
+        ylabel = "Amplitude",
+    ),
+)
 
 # Next, we find the maximum frequency. We don't care about the spike at zero
 # frequency (that is just a consequence of the grid heating that we discussed
