@@ -226,10 +226,8 @@ plasma_freq = max_freq / 2
 elec_charge = 1.6e-19
 elec_mass = 9e-31
 theory_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
-
 # As you can see, these two results agree fairly closely, indicating that our
 # simulation has captured the essential physics that the theory predicts.
-using Test
-print(plasma_freq)
-print(theory_plasma_freq)
-## @test isapprox(plasma_freq, theory_plasma_freq, rtol = 0.1)
+
+using Test #src
+@test isapprox(plasma_freq, theory_plasma_freq, rtol = 0.1) #src
