@@ -43,7 +43,7 @@ makedocs(
             "Introduction" => "theory/index.md",
             "PIC simulation" => "theory/intro_to_pic.md",
         ],
-        "reference/index.md",
+        "manual/index.md",
         "references.md",
     ],
     strict = get(ENV, "CI", nothing) == "true",
@@ -53,9 +53,9 @@ makedocs(
 postprocess_democard_cb()
 
 @info "Clean up generated tutorial materials"
-rm(jointpath(tutorial_output_path, "tutorial.md"))
-rm(jointpath(tutorial_output_path, "tutorial.jl"))
-rm(jointpath(tutorial_output_path, "tutorial.ipynb"))
+rm(joinpath(tutorial_output_path, "tutorial.md"))
+rm(joinpath(tutorial_output_path, "tutorial.jl"))
+rm(joinpath(tutorial_output_path, "tutorial.ipynb"))
 
 @info "Deploying docs"
 deploydocs(repo = "github.com/adamslc/ParticleInCell2.jl.git")
