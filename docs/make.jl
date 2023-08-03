@@ -5,10 +5,10 @@ using ParticleInCell2
 
 @info "Generating tutorial materials from Literate script"
 tutorial_path = joinpath(@__DIR__, "literate_src", "tutorial.jl")
-output_path = joinpath(@__DIR__, "src")
-Literate.markdown(tutorial_path, output_path, documenter = true)
-Literate.notebook(tutorial_path, output_path, documenter = true)
-Literate.script(tutorial_path, output_path, documenter = true)
+tutorial_output_path = joinpath(@__DIR__, "src")
+Literate.markdown(tutorial_path, tutorial_output_path, documenter = true)
+Literate.notebook(tutorial_path, tutorial_output_path, documenter = true)
+Literate.script(tutorial_path, tutorial_output_path, documenter = true)
 
 @info "Generating examples using DemoCards"
 examples_page, postprocess_democard_cb, demo_assets = makedemos("literate_src/examples")
@@ -51,6 +51,11 @@ makedocs(
 
 @info "Postprocessing DemoCards"
 postprocess_democard_cb()
+
+@info "Clean up generated tutorial materials"
+rm(jointpath(tutorial_output_path, "tutorial.md"))
+rm(jointpath(tutorial_output_path, "tutorial.jl"))
+rm(jointpath(tutorial_output_path, "tutorial.ipynb"))
 
 @info "Deploying docs"
 deploydocs(repo = "github.com/adamslc/ParticleInCell2.jl.git")
