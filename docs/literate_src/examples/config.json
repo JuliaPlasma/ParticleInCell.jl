@@ -1,3 +1,7 @@
 {
-    "theme": "list"
+    "theme": "list",
+    "order": [
+        "electrostatic",
+        "electromagnetic"
+    ]
 }
