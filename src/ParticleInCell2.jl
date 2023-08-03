@@ -40,4 +40,7 @@ export BSplineChargeInterpolation, BSplineFieldInterpolation
 
 include("push.jl")
 export SimpleParticlePush, CommunicateSpecies
+include("boris.jl")
+export BorisParticlePush
+
 end
