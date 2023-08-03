@@ -7,6 +7,12 @@ abstract type AbstractField{T,D,G} end
     face
 end
 
+"""
+    Field(grid, offset, num_elements,[ lower_guard_cells = 0,
+        [upper_guard_cells = lower_guard_cells + 1]])
+
+Stores the values of a field.
+"""
 struct Field{T,D,D1,G} <: AbstractField{T,D,G}
     values::Array{T,D1}
     grid::G
