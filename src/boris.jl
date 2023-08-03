@@ -11,7 +11,7 @@ For more details on the method, see [Sections 4.3 and 4.4 of Birdsall and
 Langdon](@cite birdsall2004), or the [Boris' original conference
 proceedings](@cite boris1970).
 """
-struct BorisParticlePush{S, F, T} <: AbstractSimulationStep
+struct BorisParticlePush{S,F,T} <: AbstractSimulationStep
     species::S
     E::F
     B::F
