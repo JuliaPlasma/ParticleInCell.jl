@@ -7,11 +7,10 @@
 
     positions = [SVector(0.5)]
     momentums = [SVector(0.0)]
-    forces = [SVector(0.0)]
     weights = [1.0]
     charge = 1.0
     mass = 1.0
-    species = Species(positions, momentums, forces, weights, charge, mass)
+    species = Species(positions, momentums, weights, charge, mass)
 
     dt = 1.0
     step = ElectrostaticParticlePush(species, E, dt)

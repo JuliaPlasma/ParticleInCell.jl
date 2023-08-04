@@ -77,7 +77,6 @@ mass = 9e-31 * particles_per_macro
 
 positions = Vector{SVector{1,Float64}}(undef, num_particles)
 momentums = Vector{SVector{1,Float64}}(undef, num_particles)
-forces = Vector{SVector{1,Float64}}(undef, num_particles)
 weights = Vector{Float64}(undef, num_particles)
 
 for i in eachindex(positions)
@@ -85,10 +84,9 @@ for i in eachindex(positions)
     momentums[i] = SVector(
         mass * (amplitude * sin((i - 1) / num_particles * k * 2pi) + thermal_amp * randn()),
     )
-    forces[i] = SVector(0.0)
     weights[i] = 1.0
 end
-electrons = Species(positions, momentums, forces, weights, charge, mass);
+electrons = Species(positions, momentums, weights, charge, mass);
 
 # In the final step of the setup, we create all of the simulation steps
 # required to do the electrostatic simulation. In this tutorial, we will not
@@ -114,8 +112,7 @@ finite_diff = FiniteDifferenceToEdges(phi, Eedge)
 comm_Eedge = CommunicateGuardCells(Eedge)
 elec_ave = AverageEdgesToNodes(Eedge, Enode)
 comm_Enode = CommunicateGuardCells(Enode)
-elec_interp = BSplineFieldInterpolation(electrons, Enode, 1)
-push = SimpleParticlePush(electrons, dt)
+push = ElectrostaticParticlePush(electrons, Enode, dt)
 comm_electrons = CommunicateSpecies(electrons, grid);
 
 # Now we are ready to run the simulation. We will simulate the plasma for 1000
@@ -138,9 +135,6 @@ for n = 1:n_steps
 
     ## TODO
     rho.values .= 0
-    for i in eachindex(electrons.forces)
-        electrons.forces[i] = SVector(0.0)
-    end
 
     step!(charge_interp)
     step!(comm_rho)
@@ -150,7 +144,6 @@ for n = 1:n_steps
     step!(comm_Eedge)
     step!(elec_ave)
     step!(comm_Enode)
-    step!(elec_interp)
     step!(push)
     step!(comm_electrons)
 end
