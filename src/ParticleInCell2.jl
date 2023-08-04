@@ -30,7 +30,7 @@ end
 export step!
 
 include("field_utils.jl")
-export FiniteDifferenceToEdges, AverageEdgesToNodes, CommunicateGuardCells
+export FiniteDifferenceToEdges, AverageEdgesToNodes
 
 include("poisson.jl")
 export PoissonSolveFFT
@@ -38,8 +38,11 @@ export PoissonSolveFFT
 include("interpolation.jl")
 export BSplineChargeInterpolation
 
-include("particle_updaters/push.jl")
+include("communicate/communicate_species.jl")
 export CommunicateSpecies
+include("communicate/communicate_field.jl")
+export CommunicateGuardCells
+
 include("particle_updaters/electrostatic.jl")
 export ElectrostaticParticlePush
 include("particle_updaters/boris.jl")
