@@ -136,6 +136,8 @@ function select_bs_interp(degree)
     end
 end
 
+bs_interp_width(degree) = div(degree, 2) + 1
+
 struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
     species::S
     rho::F
