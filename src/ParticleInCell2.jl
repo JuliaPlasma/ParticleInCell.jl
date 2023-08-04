@@ -38,9 +38,9 @@ export PoissonSolveFFT
 include("interpolation.jl")
 export BSplineChargeInterpolation, BSplineFieldInterpolation
 
-include("push.jl")
+include("particle_updaters/push.jl")
 export SimpleParticlePush, CommunicateSpecies
-include("boris.jl")
+include("particle_updaters/boris.jl")
 export BorisParticlePush
 
 end
