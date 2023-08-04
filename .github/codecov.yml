@@ -1,11 +1,19 @@
 comment: false
 
-flag_management:
-  default_rules:
-    carryforward: false
-    statuses:
-      - type: project
+coverage:
+  status:
+    project:
+      default: false
+      unit:
         target: auto
-        threshold: 1%
-      - type: patch
+        flags:
+          - unit
+      integration:
+        target: auto
+        flags:
+          - integration
+    patch:
+      default:
         target: 90%
+      flags:
+        - unit
