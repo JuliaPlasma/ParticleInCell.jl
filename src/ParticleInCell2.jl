@@ -21,7 +21,7 @@ include("field.jl")
 export Field
 
 include("species.jl")
-export Field, Species
+export Species
 
 abstract type AbstractSimulationStep end
 function step!(step::T) where {T<:AbstractSimulationStep}
@@ -36,10 +36,10 @@ include("poisson.jl")
 export PoissonSolveFFT
 
 include("interpolation.jl")
-export BSplineChargeInterpolation, BSplineFieldInterpolation
+export BSplineChargeInterpolation
 
 include("particle_updaters/push.jl")
-export SimpleParticlePush, CommunicateSpecies
+export CommunicateSpecies
 include("particle_updaters/electrostatic.jl")
 export ElectrostaticParticlePush
 include("particle_updaters/boris.jl")

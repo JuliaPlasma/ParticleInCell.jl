@@ -21,9 +21,8 @@ for i = 1:n_particles
     positions[i] = SVector(rand(2)...)
 end
 momentums = fill(SVector(0.0, 0.0), n_particles)
-forces = fill(SVector(0.0, 0.0), n_particles)
 weights = fill(0.0, n_particles)
-species = Species(positions, momentums, forces, weights, 1.0, 1.0)
+species = Species(positions, momentums, weights, 1.0, 1.0)
 
 const SUITE = BenchmarkGroup()
 
@@ -32,12 +31,6 @@ SUITE["charge_dep"] = BenchmarkGroup(["interpolation", "particle", "field"])
 SUITE["charge_dep"]["creation"] =
     @benchmarkable BSplineChargeInterpolation($species, $rho, 1)
 SUITE["charge_dep"]["step"] = @benchmarkable step!($bs_charge)
-
-bs_field = BSplineFieldInterpolation(species, rho, 1)
-SUITE["field_interp"] = BenchmarkGroup(["interpolation", "particle", "field"])
-SUITE["field_interp"]["creation"] =
-    @benchmarkable BSplineFieldInterpolation($species, $rho, 1)
-SUITE["field_interp"]["step"] = @benchmarkable step!($bs_field)
 
 fs = PoissonSolveFFT(rho, phi)
 SUITE["fft_field_solve"] = BenchmarkGroup(["interpolation", "particle", "field"])

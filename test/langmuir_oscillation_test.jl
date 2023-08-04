@@ -41,7 +41,6 @@
 
         positions = Vector{SVector{1,Float64}}(undef, num_particles)
         momentums = Vector{SVector{1,Float64}}(undef, num_particles)
-        forces = Vector{SVector{1,Float64}}(undef, num_particles)
         weights = Vector{Float64}(undef, num_particles)
 
         for i in eachindex(positions)
@@ -52,10 +51,9 @@
                     thermal_amp * randn()
                 ),
             )
-            forces[i] = SVector(0.0)
             weights[i] = 1.0
         end
-        electrons = Species(positions, momentums, forces, weights, charge, mass)
+        electrons = Species(positions, momentums, weights, charge, mass)
 
         charge_interp = BSplineChargeInterpolation(electrons, rho, 1)
         comm_rho = CommunicateGuardCells(rho, true)
@@ -65,8 +63,7 @@
         comm_Eedge = CommunicateGuardCells(Eedge)
         elec_ave = AverageEdgesToNodes(Eedge, Enode)
         comm_Enode = CommunicateGuardCells(Enode)
-        elec_interp = BSplineFieldInterpolation(electrons, Enode, 1)
-        push = SimpleParticlePush(electrons, dt)
+        push = ElectrostaticParticlePush(electrons, Enode, dt)
         comm_electrons = CommunicateSpecies(electrons, g)
 
         electric_field_energy = Vector{Float64}(undef, n_steps)
@@ -78,9 +75,6 @@
 
             # TODO
             rho.values .= 0
-            for i in eachindex(electrons.forces)
-                electrons.forces[i] = SVector(0.0)
-            end
 
             step!(charge_interp)
             step!(comm_rho)
@@ -90,7 +84,6 @@
             step!(comm_Eedge)
             step!(elec_ave)
             step!(comm_Enode)
-            step!(elec_interp)
             step!(push)
             step!(comm_electrons)
         end
