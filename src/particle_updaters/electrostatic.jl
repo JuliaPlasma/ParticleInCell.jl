@@ -59,8 +59,8 @@ function step!(step::ElectrostaticParticlePush)
             interp_weight = prod(interp_weights)
             species.momentums[n] =
                 species.momentums[n] .+
-                (step.timestep * species.charge) .* species.weights[n] .*
-                step.E.values[I] .* interp_weight
+                (interp_weight * step.timestep * species.charge * species.weights[n]) .*
+                step.E.values[I]
         end
     end
 end
