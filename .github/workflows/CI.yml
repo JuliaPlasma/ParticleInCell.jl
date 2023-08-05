@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  format:
-    name: Check Formatting
+  initial_check:
+    name: Initial checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,9 +20,14 @@ jobs:
       - name: Check formatting
         run: |
           if [[ $(git diff --name-only | wc -l) -ge 1 ]]; then exit 1; else exit 0; fi
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: adamslc/julia-runtest@main
+        with:
+          test_arg: basics
+        name: Run basic tests
 
   test:
-    needs: format
+    needs: initial_check
     name: Run Tests (Julia v${{ matrix.version }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -31,6 +36,7 @@ jobs:
         version: ['1.9']
         os:      [ubuntu-latest]
         arch:    [x64]
+        test_subset: ['unit', 'integration']
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -51,8 +57,8 @@ jobs:
 
       - uses: adamslc/julia-runtest@main
         with:
-          test_arg: basics
-        name: Run basic tests
+          test_arg: ${{ matrix.test_subset }}
+        name: Run ${{ matrix.test_subset }} tests
       - uses: julia-actions/julia-processcoverage@v1
         with:
           directories: 'src,ext'
@@ -60,41 +66,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: lcov.info
-          flags: basics
-      - name: Clean up .cov files
-        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
-
-      - uses: adamslc/julia-runtest@main
-        with:
-          test_arg: unit
-        name: Run unit tests
-      - uses: julia-actions/julia-processcoverage@v1
-        with:
-          directories: 'src,ext'
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: lcov.info
-          flags: unit
-      - name: Clean up .cov files
-        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
-
-      - uses: adamslc/julia-runtest@main
-        with:
-          test_arg: integration
-        name: Run integration tests
-      - uses: julia-actions/julia-processcoverage@v1
-        with:
-          directories: 'src,ext'
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: lcov.info
-          flags: integration
-      - name: Clean up .cov files
-        run: julia --project=utils/clean_cov utils/clean_cov/clean_cov.jl
+          flags: ${{ matrix.test_subset }}
 
   docs:
+    needs: initial_check
     name: Build documentation
     permissions:
       contents: write
