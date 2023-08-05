@@ -28,7 +28,7 @@ jobs:
 
   test:
     needs: initial_check
-    name: Run Tests (Julia v${{ matrix.version }})
+    name: Run Tests (Julia v${{ matrix.version }}) (${{ matrix.test_subset }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
