@@ -15,5 +15,5 @@ coverage:
     patch:
       default:
         target: 90%
-      flags:
-        - unit
+        flags:
+          - unit
