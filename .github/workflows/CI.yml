@@ -10,7 +10,7 @@ jobs:
     name: Initial checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.9'
@@ -28,7 +28,7 @@ jobs:
 
   test:
     needs: initial_check
-    name: Run Tests (Julia v${{ matrix.version }}) (${{ matrix.test_subset }})
+    name: Run ${{ matrix.test_subset }} tests (Julia v${{ matrix.version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -38,7 +38,7 @@ jobs:
         arch:    [x64]
         test_subset: ['unit', 'integration']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
@@ -75,7 +75,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.9'
