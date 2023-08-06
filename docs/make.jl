@@ -4,7 +4,8 @@ using Literate
 using ParticleInCell2
 
 @info "Generating examples using DemoCards"
-examples_page, postprocess_democard_cb, demo_assets = makedemos("../examples")
+examples_page, postprocess_democard_cb, demo_assets =
+    makedemos("../examples", filter_function = x -> !endswith(x, "_test.jl"))
 
 @info "Gathering information from Project.toml"
 PROJECT_TOML = Pkg.TOML.parsefile(joinpath(@__DIR__, "..", "Project.toml"))

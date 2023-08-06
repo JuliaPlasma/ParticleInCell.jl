@@ -1,5 +1,6 @@
 # ---
 # title: "Tutorial: Langmuir oscillations"
+# id: "tutorial_langmuir"
 # ---
 # This tutorial will get you up and running using `ParticleInCell2` by showing
 # you how to model one of the simplest phenomena in plasma physics: an
