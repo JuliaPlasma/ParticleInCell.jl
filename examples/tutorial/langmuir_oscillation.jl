@@ -1,9 +1,6 @@
-# # Tutorial
-#md # !!! tip
-#md #     You can also view this tutorial as a
-#md #     [Jupyter notebook](@__NBVIEWER_ROOT_URL__/tutorial.ipynb) or you can
-#md #     download the plain Julia [script](tutorial.jl).
-#
+# ---
+# title: "Tutorial: Langmuir oscillations"
+# ---
 # This tutorial will get you up and running using `ParticleInCell2` by showing
 # you how to model one of the simplest phenomena in plasma physics: an
 # electrostatic (or Langmuir) oscillation.
