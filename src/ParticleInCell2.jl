@@ -13,6 +13,7 @@ end ParticleInCell2
 
 using FFTW
 using StaticArrays
+using StructEquality
 
 include("grids/grid.jl")
 export AbstractGrid, UniformCartesianGrid, node, edge, face
