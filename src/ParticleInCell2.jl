@@ -22,7 +22,7 @@ include("field.jl")
 export Field
 
 include("species.jl")
-export Species
+export Species, electrons
 
 abstract type AbstractSimulationStep end
 function step!(step::T) where {T<:AbstractSimulationStep}
