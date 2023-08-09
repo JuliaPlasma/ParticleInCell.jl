@@ -1,3 +1,12 @@
+.PHONY: error
+error:
+	@echo "Please choose one of the following targets:"
+	@echo "  - test"
+	@echo "  - format"
+	@echo "  - docs"
+	@echo "  - benchmark"
+	@exit 2
+
 .PHONY: test
 test:
 	julia --project=. -e 'using ReTestItems; runtests()'
