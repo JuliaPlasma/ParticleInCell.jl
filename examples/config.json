@@ -1,6 +1,7 @@
 {
     "theme": "list",
     "order": [
+        "tutorial",
         "electrostatic",
         "electromagnetic"
     ]
