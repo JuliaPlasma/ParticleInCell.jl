@@ -1,15 +1,29 @@
 .PHONY: error
 error:
 	@echo "Please choose one of the following targets:"
-	@echo "  - test"
-	@echo "  - format"
-	@echo "  - docs"
-	@echo "  - benchmark"
+	@echo "- test"
+	@echo "  - test-basics"
+	@echo "  - test-unit"
+	@echo "  - test-integration"
+	@echo "- format"
+	@echo "- docs"
+	@echo "- benchmark"
 	@exit 2
 
 .PHONY: test
-test:
-	julia --project=. -e 'using ReTestItems; runtests()'
+test: test-basics test-unit test-integration
+
+.PHONY: test-basics
+test-basics:
+	julia --project=. -e 'using ReTestItems; runtests(tags=:basics)'
+
+.PHONY: test-unit
+test-unit:
+	julia --project=. -e 'using ReTestItems; runtests(tags=:unit)'
+
+.PHONY: test-integration
+test-integration:
+	julia --project=. -e 'using ReTestItems; runtests(tags=:integration)'
 
 .PHONY: format
 format:
