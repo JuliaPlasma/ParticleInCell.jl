@@ -11,17 +11,32 @@ using FFTW
 using StaticArrays
 using StructEquality
 
+import Base: eachindex
+
 include("grids/grid.jl")
 export AbstractGrid, UniformCartesianGrid, node, edge, face
+
+include("species/species.jl")
+export AbstractSpecies,
+    particle_charge,
+    physical_charge,
+    particle_mass,
+    physical_mass,
+    particle_weight,
+    particle_position,
+    particle_position!,
+    particle_momentum,
+    particle_momentum!,
+    particle_velocity,
+    physical_momentum,
+    Species,
+    electrons
 
 include("field.jl")
 export Field
 
-include("species.jl")
-export Species, electrons
-
 abstract type AbstractSimulationStep end
-function step!(step::T) where {T<:AbstractSimulationStep}
+function step!(::T) where {T<:AbstractSimulationStep}
     error("step! not defined for type $T")
 end
 export step!

@@ -13,11 +13,32 @@ ParticleInCell2.cell_coords_to_phys_coords
 ParticleInCell2.phys_coords_to_cell_coords
 ```
 
-## Fields and species
+## Species
 ```@docs
-Field
+AbstractSpecies
 Species
 electrons
+```
+
+### Species utility functions
+```@docs
+particle_charge
+physical_charge
+particle_mass
+physical_mass
+particle_weight
+particle_position
+particle_position!
+particle_momentum
+particle_momentum!
+particle_velocity
+physical_momentum
+eachindex
+```
+
+## Fields
+```@docs
+Field
 ```
 
 ## Update steps

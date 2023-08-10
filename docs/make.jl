@@ -41,6 +41,7 @@ makedocs(
         "references.md",
     ],
     strict = get(ENV, "CI", nothing) == "true",
+    modules = [ParticleInCell2],
 )
 
 @info "Postprocessing DemoCards"
