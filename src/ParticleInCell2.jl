@@ -29,7 +29,7 @@ export AbstractSpecies,
     particle_momentum!,
     particle_velocity,
     physical_momentum,
-    Species,
+    VariableWeightSpecies,
     electrons
 
 include("field.jl")

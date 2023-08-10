@@ -3,7 +3,7 @@ Subtypes of `AbstractSpecies` represent a group of macroparticles with a single 
 charge and mass. Each particle of a species can optionally represent a different number of
 physical particles.
 """
-abstract type AbstractSpecies end
+abstract type AbstractSpecies{D,V,T} end
 
 """
     particle_charge(species, idx)
