@@ -22,7 +22,7 @@ for i = 1:n_particles
 end
 momentums = fill(SVector(0.0, 0.0), n_particles)
 weights = fill(0.0, n_particles)
-species = Species(positions, momentums, weights, 1.0, 1.0)
+species = VariableWeightSpecies(positions, momentums, weights, 1.0, 1.0)
 
 const SUITE = BenchmarkGroup()
 

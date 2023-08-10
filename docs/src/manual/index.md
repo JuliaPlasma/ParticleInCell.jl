@@ -16,7 +16,7 @@ ParticleInCell2.phys_coords_to_cell_coords
 ## Species
 ```@docs
 AbstractSpecies
-Species
+VariableWeightSpecies
 electrons
 ```
 

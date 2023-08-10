@@ -32,16 +32,16 @@ struct BorisParticlePush{V,S,F,T,IF} <: AbstractSimulationStep
     interpolation_function::IF
 
     function BorisParticlePush(
-        species::Species{D,V,T},
+        species::S,
         E::F,
         B::F,
         timestep::TS,
         interpolation_order = 1,
-    ) where {D,V,T,F,TS}
+    ) where {D,V,T,S<:AbstractSpecies{D,V,T},F,TS}
         interpolation_width = bs_interp_width(interpolation_order)
         interpolation_function = select_bs_interp(interpolation_order)
 
-        new{V,Species{D,V,T},F,TS,typeof(interpolation_function)}(
+        new{V,S,F,TS,typeof(interpolation_function)}(
             species,
             E,
             B,
