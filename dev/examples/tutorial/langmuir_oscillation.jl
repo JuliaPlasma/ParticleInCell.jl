@@ -1,7 +1,7 @@
-using Pkg
-Pkg.develop(url = "https://github.com/adamslc/ParticleInCell2.jl")
 using ParticleInCell2
 using StaticArrays
+using CairoMakie
+CairoMakie.activate!(type = "svg") # hide
 
 sim_length = 1.0
 num_cells = 32
@@ -23,22 +23,14 @@ k = 1
 amplitude = 1e3
 thermal_amp = 0.0
 
-epsilon_0 = 8.8e-12
-charge = 1.6e-19 * particles_per_macro
-mass = 9e-31 * particles_per_macro
+elec_mass = 9e-31
+positions = collect(0:num_particles-1) ./ num_particles
+momentums =
+    (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k .* 2pi) .+
+    thermal_amp .* randn.()
+electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro);
 
-positions = Vector{SVector{1,Float64}}(undef, num_particles)
-momentums = Vector{SVector{1,Float64}}(undef, num_particles)
-weights = Vector{Float64}(undef, num_particles)
-
-for i in eachindex(positions)
-    positions[i] = SVector((i - 1) / num_particles)
-    momentums[i] = SVector(
-        mass * (amplitude * sin((i - 1) / num_particles * k * 2pi) + thermal_amp * randn()),
-    )
-    weights[i] = 1.0
-end
-electrons = Species(positions, momentums, weights, charge, mass);
+scatter(positions, momentums)
 
 dt = 1.11e-11 * 2
 
@@ -55,6 +47,7 @@ comm_electrons = CommunicateSpecies(electrons, grid);
 
 n_steps = 1000
 
+epsilon_0 = 8.8e-12
 electric_field_energy = Vector{Float64}(undef, n_steps)
 
 for n = 1:n_steps
@@ -78,9 +71,6 @@ for n = 1:n_steps
     step!(push)
     step!(comm_electrons)
 end
-
-using CairoMakie
-CairoMakie.activate!(type = "svg")
 
 times = collect(range(1, n_steps)) .* dt
 lines(
@@ -120,12 +110,13 @@ max_index = findmax(freq_amps)[2]
 max_freq = freqs[max_index]
 
 # Divide by 2 because the electric field energy goes through a maximum twice
-# per plasma oscillation
-plasma_freq = max_freq / 2
+# per plasma oscillation, and take the absolute value because we don't care
+# about the phase of the oscillation.
+plasma_freq = abs(max_freq / 2)
 
 elec_charge = 1.6e-19
 elec_mass = 9e-31
-theory_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
+expected_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
 
