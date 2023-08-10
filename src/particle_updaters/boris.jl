@@ -60,14 +60,17 @@ end
 function step!(step::BorisParticlePush{2})
     species = step.species
     # TODO: this will break for an empty species...
-    pos_dim = length(species.positions[1])
+    pos_dim = length(particle_position(species, 1))
 
-    for n in eachindex(species.positions)
+    for n in eachindex(species)
         # Push the particle based on its current velocity
-        species.positions[n] =
+        particle_position!(
+            species,
+            n,
             species.positions[n] .+
-            (step.timestep / species.mass / species.weights[n]) .*
-            species.momentums[n][1:pos_dim]
+            (step.timestep / particle_mass(species, n)) .*
+            particle_momentum(species, n)[1:pos_dim],
+        )
 
         # Accelerate the particle according to E and B
         # The Boris algorithm first does half the acceleration by E, then the
@@ -77,7 +80,7 @@ function step!(step::BorisParticlePush{2})
         # object that extends +/- interpolation_width in all directions
         particle_cell_coord, Is = phys_coords_to_cell_index_ittr(
             step.E,
-            species.positions[n],
+            particle_position(species, n),
             step.interpolation_width,
         )
 
@@ -107,29 +110,36 @@ function step!(step::BorisParticlePush{2})
         end
 
         # Apply the first half of the acceleration
-        species.momentums[n] =
-            species.momentums[n] .+
-            (step.timestep * species.charge * species.weights[n] / 2) .* local_E
+        particle_momentum!(
+            species,
+            n,
+            particle_momentum(species, n) .+
+            (step.timestep * particle_charge(species, n) / 2) .* local_E,
+        )
 
         # With two velocity dimensions, the magnetic field must be
         # perpendicular to both fields, and thus we can use a shortcut due to
         # Buneman to calculate the rotation. See section 4.3 of Birdsall and
         # Langdon for details. I use the same notation here.
-        t = species.charge * local_B * step.timestep / (species.mass * 2)
+        t =
+            physical_charge(species, n) * local_B * step.timestep /
+            (physical_mass(species, n) * 2)
         s = 2 * t / (1 + t^2)
 
-        px_minus = species.momentums[n][1]
-        py_minus = species.momentums[n][2]
+        px_minus, py_minus = particle_momentum(species, n)
         px_prime = px_minus + py_minus * t
         py_plus = py_minus - px_prime * s
         px_plus = px_prime + py_plus * t
 
-        species.momentums[n] = SVector(px_plus, py_plus)
+        particle_momentum!(species, n, SVector(px_plus, py_plus))
 
         # Apply the second half of the acceleration
-        species.momentums[n] =
-            species.momentums[n] .+
-            (step.timestep * species.charge * species.weights[n] / 2) .* local_E
+        particle_momentum!(
+            species,
+            n,
+            particle_momentum(species, n) .+
+            (step.timestep * particle_charge(species, n) / 2) .* local_E,
+        )
     end
 end
 
