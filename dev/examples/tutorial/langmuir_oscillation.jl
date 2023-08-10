@@ -1,10 +1,33 @@
 using ParticleInCell2
-using StaticArrays
 using CairoMakie
 CairoMakie.activate!(type = "svg") # hide
 
 sim_length = 1.0
+nom_density = 1e14
+num_macroparticles = 320
+particles_per_macro = nom_density * sim_length / num_macroparticles
+
+positions = collect(0:num_macroparticles-1) ./ num_macroparticles;
+
+k = 1
+amplitude = 1e3
+elec_mass = 9e-31
+momentums = (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k .* 2pi);
+
+scatter(
+    positions,
+    momentums;
+    axis = (;
+        title = "Electron phase space",
+        xlabel = "Position (m)",
+        ylabel = "Momentum (kg m / s)",
+    ),
+)
+
+electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro);
+
 num_cells = 32
+dx = sim_length / num_cells
 periodic = true
 grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (periodic,));
 
@@ -15,24 +38,13 @@ phi = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
 Eedge = Field(grid, ParticleInCell2.edge, field_dimension, lower_guard_cells)
 Enode = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells);
 
-nom_density = 1e14
-dx = sim_length / num_cells
-num_particles = num_cells * 10
-particles_per_macro = nom_density * sim_length / num_particles
-k = 1
-amplitude = 1e3
-thermal_amp = 0.0
-
+epsilon_0 = 8.8e-12
+elec_charge = 1.6e-19
 elec_mass = 9e-31
-positions = collect(0:num_particles-1) ./ num_particles
-momentums =
-    (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k .* 2pi) .+
-    thermal_amp .* randn.()
-electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro);
+expected_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
+expected_plasma_period = 2pi / expected_plasma_freq
 
-scatter(positions, momentums)
-
-dt = 1.11e-11 * 2
+dt = 5e-11
 
 charge_interp = BSplineChargeInterpolation(electrons, rho, 1)
 comm_rho = CommunicateGuardCells(rho, true)
@@ -47,7 +59,6 @@ comm_electrons = CommunicateSpecies(electrons, grid);
 
 n_steps = 1000
 
-epsilon_0 = 8.8e-12
 electric_field_energy = Vector{Float64}(undef, n_steps)
 
 for n = 1:n_steps
@@ -114,9 +125,7 @@ max_freq = freqs[max_index]
 # about the phase of the oscillation.
 plasma_freq = abs(max_freq / 2)
 
-elec_charge = 1.6e-19
-elec_mass = 9e-31
-expected_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
+relative_error = (plasma_freq - expected_plasma_freq) / expected_plasma_freq
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
 
