@@ -3,13 +3,18 @@ struct CommunicateSpecies{S,G} <: AbstractSimulationStep
     grid::G
 end
 
+# TODO...
 function step!(step::CommunicateSpecies)
-    for n in eachindex(step.species.positions)
-        step.species.positions[n] =
-            step.species.positions[n] .-
+    species = step.species
+    for n in eachindex(species)
+        particle_position!(
+            species,
+            n,
+            particle_position(species, n) .-
             floor.(
-                (step.species.positions[n] .- step.grid.lower_bounds) ./
+                (particle_position(species, n) .- step.grid.lower_bounds) ./
                 sim_lengths(step.grid)
-            ) .* sim_lengths(step.grid)
+            ) .* sim_lengths(step.grid),
+        )
     end
 end

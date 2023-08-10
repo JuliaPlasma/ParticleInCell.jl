@@ -34,3 +34,19 @@ function Species(
 
     return Species{D,V,T}(pos_vec, mom_vec, weights, charge, mass)
 end
+
+particle_charge(species::Species, idx) = species.charge * species.weights[idx]
+physical_charge(species::Species, idx) = species.charge
+particle_mass(species::Species, idx) = species.mass * species.weights[idx]
+physical_mass(species::Species, idx) = species.mass
+particle_weight(species::Species, idx) = species.weights[idx]
+
+particle_position(species::Species, idx) = species.positions[idx]
+particle_position!(species::Species, idx, value) = species.positions[idx] = value
+particle_momentum(species::Species, idx) = species.momentums[idx]
+particle_momentum!(species::Species, idx, value) = species.momentums[idx] = value
+# TODO: this is not relativistic...
+particle_velocity(species::Species, idx) =
+    species.momentums[idx] / particle_mass(species, idx)
+physical_momentum(species::Species, idx) = species.momentums[idx] / particle.weights[idx]
+eachindex(species::Species) = eachindex(species.positions)

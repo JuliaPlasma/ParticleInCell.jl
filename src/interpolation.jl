@@ -167,12 +167,12 @@ function step!(step::BSplineChargeInterpolation)
     grid = step.rho.grid
     cell_volume = prod(cell_lengths(grid))
 
-    for i in eachindex(step.species.positions)
+    for i in eachindex(step.species)
         # Find which cell the particle is in, and create a CartesianIndices
         # object that extends +/- interp_width in all directions
         particle_cell_coord, Is = phys_coords_to_cell_index_ittr(
             step.rho,
-            step.species.positions[i],
+            particle_position(step.species, i),
             step.interp_width,
         )
 
@@ -184,7 +184,7 @@ function step!(step::BSplineChargeInterpolation)
             interp_weights = step.interp_func.(dist)
             interp_weight = prod(interp_weights)
             step.rho.values[I] +=
-                step.species.charge * step.species.weights[i] / cell_volume * interp_weight
+                particle_charge(step.species, i) / cell_volume * interp_weight
         end
     end
 end
