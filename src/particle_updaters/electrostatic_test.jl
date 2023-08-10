@@ -5,8 +5,8 @@
     E = Field(g, ParticleInCell2.node, 1, 1)
     E.values .= 0.1
 
-    positions = [0.5]
-    momentums = [0.0]
+    positions = fill(0.5, 1, 1)
+    momentums = fill(0.0, 1, 1)
     weights = [1.0]
     charge = 1.0
     mass = 1.0
@@ -15,6 +15,6 @@
     dt = 1.0
     step = ElectrostaticParticlePush(species, E, dt)
     step!(step)
-    @test positions[1][1] == 0.5
-    @test momentums[1][1] == 0.1
+    @test species.positions[1][1] == 0.5
+    @test species.momentums[1][1] == 0.1
 end

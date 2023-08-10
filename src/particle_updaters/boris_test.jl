@@ -7,8 +7,8 @@
         E = Field(g, ParticleInCell2.node, 1, 1)
         B = Field(g, ParticleInCell2.node, 1, 1)
 
-        positions = [0.5]
-        momentums = [0.01; 0.0]
+        positions = [SVector(0.5)]
+        momentums = [SVector(0.01, 0.0)]
         weights = [1.0]
         charge = 1.0
         mass = 1.0
@@ -30,8 +30,8 @@
         # Check that cyclotron frequency is correct
         E.values .= 0.0
         B.values .= 1.0
-        species.positions .= [0.5]
-        species.momentums .= [0.01; 0.0]
+        species.positions .= [SVector(0.5)]
+        species.momentums .= [SVector(0.01, 0.0)]
 
         nsteps = 200
         x = Vector{Float64}(undef, nsteps)

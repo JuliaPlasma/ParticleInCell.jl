@@ -13,7 +13,7 @@
     g = UniformCartesianGrid((0.0,), (1.0,), (10,), (true,))
     rho = Field(g, ParticleInCell2.node, 1)
     phi = Field(g, ParticleInCell2.node, 1)
-    s = Species([0.5], [0.0], [1.0], 1.0, 1.0)
+    s = Species(fill(0.5, 1, 1), fill(0.0, 1, 1), [1.0], 1.0, 1.0)
 
     bs_interp = BSplineChargeInterpolation(s, rho, 1)
     step!(bs_interp)
