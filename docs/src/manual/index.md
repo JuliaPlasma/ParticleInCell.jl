@@ -17,6 +17,7 @@ ParticleInCell2.phys_coords_to_cell_coords
 ```@docs
 Field
 Species
+electrons
 ```
 
 ## Update steps

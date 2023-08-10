@@ -5,8 +5,8 @@
     E = Field(g, ParticleInCell2.node, 1, 1)
     E.values .= 0.1
 
-    positions = [SVector(0.5)]
-    momentums = [SVector(0.0)]
+    positions = [0.5]
+    momentums = [0.0]
     weights = [1.0]
     charge = 1.0
     mass = 1.0
