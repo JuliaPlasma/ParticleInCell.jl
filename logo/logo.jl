@@ -99,7 +99,7 @@ lbl = text!(
 hidespines!(ax1)
 hidedecorations!(ax1)
 
-record(fig, "logo.gif", 1:100) do frame
+record(fig, "logo.gif", 1:200, framerate = 12) do frame
     @show frame
     for i = 1:250
         # TODO
