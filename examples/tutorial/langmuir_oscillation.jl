@@ -70,11 +70,12 @@ scatter(
     ),
 )
 
-# Finally, we create a `Species` which holds the all of the macroparticles. Additionally,
-# we must pass the value of `particles_per_macro`, which is used to calculate the charge
-# and mass of the macroparticles.
+# Finally, we create a `VariableWeightSpecies` which holds the all of the
+# macroparticles. Additionally, we must pass the value of
+# `particles_per_macro`, which is used to calculate the charge and mass of the
+# macroparticles.
 electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro);
-@test typeof(electrons) <: Species #src
+@test typeof(electrons) <: VariableWeightSpecies #src
 
 # Now we address the 'cell' piece of particle-in-cell by creating a `grid`. Because Langmuir
 # oscillations are a one-dimensional phenomena, we will choose to perform a 1D simulation.
