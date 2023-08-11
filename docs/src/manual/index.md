@@ -42,7 +42,15 @@ Field
 ```
 
 ## Update steps
-```
+```@docs
 ParticleInCell2.AbstractUpdateStep
 step!
+ElectrostaticParticlePush
+BorisParticlePush
+```
+
+## Misc
+```@docs
+ParticleInCell2.compute_knots
+ParticleInCell2.compute_bspline_coeffs
 ```
