@@ -1,4 +1,4 @@
-![ParticleInCell.jl Logo](https://github.com/adamslc/ParticleInCell.jl/main/blob/logo/logo.gif?raw=true)
+![ParticleInCell.jl Logo](https://raw.githubusercontent.com/adamslc/ParticleInCell2.jl/main/logo/logo.gif)
 
 [![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://adamslc.github.io/ParticleInCell2.jl/dev)
 [![CI Status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
