@@ -42,9 +42,12 @@ Field
 ```
 
 ## Update steps
-```@docs
+```
 ParticleInCell2.AbstractUpdateStep
 step!
+```
+
+```@docs
 ElectrostaticParticlePush
 BorisParticlePush
 ```
