@@ -128,4 +128,3 @@ plasma_freq = abs(max_freq / 2)
 relative_error = (plasma_freq - expected_plasma_freq) / expected_plasma_freq
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-
