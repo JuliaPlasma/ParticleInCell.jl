@@ -21,7 +21,7 @@ assets = ["assets/citations.css"]
 isnothing(demo_assets) || (push!(assets, demo_assets))
 
 makedocs(
-    bib,
+    plugins = [bib],
     authors = AUTHORS,
     sitename = "ParticleInCell2.jl Documentation",
     format = Documenter.HTML(
@@ -40,7 +40,6 @@ makedocs(
         "manual/index.md",
         "references.md",
     ],
-    strict = get(ENV, "CI", nothing) == "true",
     modules = [ParticleInCell2],
 )
 
