@@ -11,6 +11,7 @@ using FFTW
 using StaticArrays
 using StructEquality
 using SparseArrays
+using LinearSolve
 
 import Base: eachindex
 
@@ -49,7 +50,7 @@ include("poisson.jl")
 export PoissonSolveFFT
 
 include("linear_solve.jl")
-export LinearSolve
+export LinearSolveStep
 
 include("interpolation.jl")
 export BSplineChargeInterpolation

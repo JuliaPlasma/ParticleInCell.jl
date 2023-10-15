@@ -73,6 +73,9 @@ end
     f.values[I...] = v
 end
 
+@inline Base.lastindex(f::Field) = lastindex(f.values)
+@inline Base.firstindex(f::Field) = firstindex(f.values)
+
 @inline function cell_index_to_cell_coords(f::Field, I)
     return Tuple(I) .- f.index_offset
 end
@@ -94,4 +97,8 @@ end
     low_bounds = cell_index .- width .+ 1
     high_bounds = cell_index .+ width
     return cell_coords, CartesianIndices(Tuple(UnitRange.(low_bounds, high_bounds)))
+end
+
+function Base.axes(f::Field)
+    return UnitRange.(f.lower_guard_cells .+ 1, f.lower_guard_cells .+ f.grid.num_cells)
 end
