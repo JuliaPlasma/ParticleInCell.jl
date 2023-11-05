@@ -19,7 +19,7 @@ end
     return (grid.upper_bounds .- grid.lower_bounds) ./ grid.num_cells
 end
 
-# TODO: inline this function once the offsets become singltons, and this
+# TODO: inline this function once the offsets become singletons, and this
 # function becomes performant
 function cell_coords_to_phys_coords(
     grid::UniformCartesianGrid{D},
