@@ -280,13 +280,13 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
     thermal_velocity = sqrt(3 * boltzmann_constant * temperature / elec_mass)
 
     positions = collect(0:num_macroparticles-1) ./ num_macroparticles
-    momentums = (particles_per_macro * elec_mass) .* (
-        perturb_amplitude .* sin.(positions .* wavenumber) .+
-        thermal_velocity .* randn.())
+    momentums =
+        (particles_per_macro * elec_mass) .*
+        (perturb_amplitude .* sin.(positions .* wavenumber) .+ thermal_velocity .* randn.())
 
     electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro)
 
-    grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,));
+    grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,))
 
     field_dimension = 1
     lower_guard_cells = 1
@@ -305,7 +305,7 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
     elec_ave = AverageEdgesToNodes(Eedge, Enode)
     comm_Enode = CommunicateGuardCells(Enode)
     push = ElectrostaticParticlePush(electrons, Enode, dt)
-    comm_electrons = CommunicateSpecies(electrons, grid);
+    comm_electrons = CommunicateSpecies(electrons, grid)
 
     n_steps = 1000
     electric_field_energy = Vector{Float64}(undef, n_steps)
@@ -355,7 +355,7 @@ end
 #
 # Let's run a few simulations and verify that this relationship holds.
 temperatures = [0, 0.1, 1, 10]
-measure_plasma_frequency.(1e14, temperatures, 1 / 2*pi)
+measure_plasma_frequency.(1e14, temperatures, 1 / 2 * pi)
 
 # We can compare this to the expected result.
 function warm_plasma_freq(number_density, temperature, wavenumber)
@@ -367,5 +367,5 @@ function warm_plasma_freq(number_density, temperature, wavenumber)
     correction_factor = boltzmann_constant * temperature * wavenumber^2 / elec_mass
     return sqrt(square_plasma_freq + correction_factor)
 end
-warm_plasma_freq.(1e14, temperatures, 1 / 2*pi)
+warm_plasma_freq.(1e14, temperatures, 1 / 2 * pi)
 # Clearly, the restoring force of the pressure is not large enough to make a difference in this case.
