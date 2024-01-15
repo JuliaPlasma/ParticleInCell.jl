@@ -26,12 +26,14 @@
 # lightest species (typically electrons) will dominate the dynamics of a plasma oscillation.
 # For this reason, we will only model the dynamics of the electrons in our simulation.
 #
+# ## Simulating a cold electron plasma
 # We begin by loading the `ParticleInCell2` package. Additionally, we load `CairoMakie`
 # which is a backend for [`Makie`](https://makie.org) that can generate beautiful,
 # publication-quality graphics.
 using ParticleInCell2
 using CairoMakie
-CairoMakie.activate!(type = "svg") # hide
+CairoMakie.activate!(type = "svg") #hide
+set_theme!(theme_light()) #hide
 using Test #src
 
 # We begin by creating some electrons to move in the simulation. For even a tiny simulation
@@ -42,9 +44,9 @@ using Test #src
 # one, and a nominal electrons number density of ``10^{14}``. Then, for a given number of
 # macroparticles, we can calculate the number of physical electrons represented by each.
 sim_length = 1.0
-nom_density = 1e14
+number_density = 1e14
 num_macroparticles = 320
-particles_per_macro = nom_density * sim_length / num_macroparticles
+particles_per_macro = number_density * sim_length / num_macroparticles
 
 # We distribute the macroparticles evenly across the simulation domain.
 positions = collect(0:num_macroparticles-1) ./ num_macroparticles;
@@ -53,10 +55,10 @@ positions = collect(0:num_macroparticles-1) ./ num_macroparticles;
 # perturbation. This corresponds to the moment in a Langmuir oscillation when the slab of
 # charge has reached equilibrium, but is being carried past by its momentum. This
 # perturbation is defined by a wavenumber `k` and an `amplitude`.
-k = 1
+k = 1 * 2pi / sim_length
 amplitude = 1e3
 elec_mass = 9e-31
-momentums = (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k .* 2pi);
+momentums = (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k);
 
 # We can visualize the initial condition of the electron macroparticle by plotting the
 # initial phase space.
@@ -121,7 +123,7 @@ Enode = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells);
 epsilon_0 = 8.8e-12
 elec_charge = 1.6e-19
 elec_mass = 9e-31
-expected_plasma_freq = sqrt(nom_density * elec_charge^2 / elec_mass / epsilon_0)
+expected_plasma_freq = sqrt(number_density * elec_charge^2 / elec_mass / epsilon_0)
 expected_plasma_period = 2pi / expected_plasma_freq
 
 # Once again, this is not a computationally demanding simulation, and so we will choose a
@@ -185,18 +187,11 @@ lines(
     axis = (; title = "Electric Field Energy", xlabel = "Time (s)", ylabel = "Energy"),
 )
 
-# Notice that the electric field energy is slowly growing over time. This is a
-# result of the "grid-heating instability". In this instability, a plasma with
-# a Debye length (the characteristic length with which the plasma will screen
-# an applied electric field) shorter than the cell size will be unphysically
-# heated until the Debye length is comparable to the cell size. Because we
-# initialized the electrons with only a sinusoidal velocity perturbation, and
-# no thermal spread in the momentum distribution, the Debye length is
-# effectively zero, and thus the simulation suffers from grid heating.
-#
-# Despite this unphysical effect, we can still use the electric field energy
-# time series to calculate the plasma frequency by computing its Fourier
-# transform. First, let's plot the Fourier transform.
+# Notice that the electric field energy is slowly growing over time, which is
+# unphysical. We will discuss where this numerical instability comes from--
+# and how it can be avoided--later. But for now, we can still use the
+# electric-field-energy time series to calculate the plasma frequency. First,
+# let's plot the Fourier transform of the electric field energy.
 using FFTW
 
 freqs = fftfreq(n_steps, 1 / dt) .* 2pi
@@ -240,7 +235,137 @@ plasma_freq = abs(max_freq / 2)
 
 # Finally, we can compare this to the theoretically expected result:
 relative_error = (plasma_freq - expected_plasma_freq) / expected_plasma_freq
+@test abs(relative_error) < 0.01 #src
 
 # Less than 1% error. Not bad!
+#
+# ## Adding temperature to the plasma
+# In the previous simulation, the electric field energy grew unphysically throughout the
+# simulation. This was a result of the "grid-heating instability", which occurs when the
+# grid does not resolve the plasma Debye length, which for an electron plasma is given by
+# ```math
+# \lambda_{D,e} = \sqrt{\frac{\epsilon_0 k_B T}{n_e q_e^2}},
+# ```
+# where ``k_B`` is the Boltzmann constant and ``T_e`` is the electron temperature.
+#
+# When the Debye length of a plasma is underresolved, the plasma will unphysically heat,
+# causing the Debye length to grow until it is resolved by the grid. Many strategies have been
+# developed to mitigate this instability, but in this tutorial, we will simply give our plasma
+# sufficient thermal energy to begin so that the simulation will be stable against the
+# grid-heating instability.
+#
+# Let's calculate the required electron temperature in the previous simulation so that
+# the 32 cell grid will resolve the Debye length. We set ``\lambda_{D,e} = \Delta x``, and
+# solve for ``T`` to find
+boltzmann_constant = 1.381e-23
+dx^2 * number_density * elec_charge^2 / epsilon_0 / boltzmann_constant
 
-@test abs(relative_error) < 0.01 #src
+# Alternatively, we can express this temperature in terms of electron volts as
+dx^2 * number_density * elec_charge / epsilon_0
+
+# We will define a function that takes an electron density, electron temperature, and
+# oscillation wavenumber, and returns a measured plasma frequency.
+function measure_plasma_frequency(number_density, temperature, wavenumber)
+    sim_length = 1.0
+
+    num_cells = 32
+    dx = sim_length / num_cells
+
+    num_macroparticles = 320
+    particles_per_macro = number_density * sim_length / num_macroparticles
+
+    perturb_amplitude = 1e3
+    elec_mass = 9e-31
+    boltzmann_constant = 1.381e-23
+    thermal_velocity = sqrt(3 * boltzmann_constant * temperature / elec_mass)
+
+    positions = collect(0:num_macroparticles-1) ./ num_macroparticles
+    momentums = (particles_per_macro * elec_mass) .* (
+        perturb_amplitude .* sin.(positions .* wavenumber) .+
+        thermal_velocity .* randn.())
+
+    electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro)
+
+    grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,));
+
+    field_dimension = 1
+    lower_guard_cells = 1
+    rho = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
+    phi = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
+    Eedge = Field(grid, ParticleInCell2.edge, field_dimension, lower_guard_cells)
+    Enode = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
+
+    dt = 5e-11
+    charge_interp = BSplineChargeInterpolation(electrons, rho, 1)
+    comm_rho = CommunicateGuardCells(rho, true)
+    field_solve = PoissonSolveFFT(rho, phi)
+    comm_phi = CommunicateGuardCells(phi)
+    finite_diff = FiniteDifferenceToEdges(phi, Eedge)
+    comm_Eedge = CommunicateGuardCells(Eedge)
+    elec_ave = AverageEdgesToNodes(Eedge, Enode)
+    comm_Enode = CommunicateGuardCells(Enode)
+    push = ElectrostaticParticlePush(electrons, Enode, dt)
+    comm_electrons = CommunicateSpecies(electrons, grid);
+
+    n_steps = 1000
+    electric_field_energy = Vector{Float64}(undef, n_steps)
+
+    epsilon_0 = 8.8e-12
+    for n = 1:n_steps
+        ## Calculate the electric field energy
+        electric_field_energy[n] = 0
+        for I in eachindex(Enode)
+            electric_field_energy[n] += (dx * epsilon_0 / 2) * (Enode.values[I])^2
+        end
+
+        ## TODO
+        rho.values .= 0
+
+        step!(charge_interp)
+        step!(comm_rho)
+        step!(field_solve)
+        step!(comm_phi)
+        step!(finite_diff)
+        step!(comm_Eedge)
+        step!(elec_ave)
+        step!(comm_Enode)
+        step!(push)
+        step!(comm_electrons)
+    end
+
+    freqs = fftfreq(n_steps, 1 / dt) .* 2pi
+    freq_amps = abs.(fft(electric_field_energy))
+
+    freq_amps[1] = 0
+    max_index = findmax(freq_amps)[2]
+    max_freq = freqs[max_index]
+    plasma_freq = abs(max_freq / 2)
+
+    return plasma_freq
+end
+
+# For a warm plasma, the thermal pressure acts as an additional restoring force on the
+# plasma oscillation. It can be show that the modified dispersion relation (frequency
+# response as a function of wavenumber) is given by
+# ```math
+# \omega^2 = \omega_{p,e}^2 + \frac{3 k_B T_e}{m_e} k^2.
+# ```
+# Notice that when $T_e = 0$, the frequency is the plasma frequency, regardless
+# of the wavenumber.
+#
+# Let's run a few simulations and verify that this relationship holds.
+temperatures = [0, 0.1, 1, 10]
+measure_plasma_frequency.(1e14, temperatures, 1 / 2*pi)
+
+# We can compare this to the expected result.
+function warm_plasma_freq(number_density, temperature, wavenumber)
+    epsilon_0 = 8.8e-12
+    elec_charge = 1.6e-19
+    elec_mass = 9e-31
+    boltzmann_constant = 1.381e-23
+    square_plasma_freq = number_density * elec_charge^2 / elec_mass / epsilon_0
+    correction_factor = boltzmann_constant * temperature * wavenumber^2 / elec_mass
+    return sqrt(square_plasma_freq + correction_factor)
+end
+warm_plasma_freq.(1e14, temperatures, 1 / 2*pi)
+# Clearly, the restoring force of the pressure is not large enough to make a difference in this case.
