@@ -2,9 +2,9 @@
 # title: "Tutorial: Langmuir oscillations"
 # id: "tutorial_langmuir"
 # ---
-# In this tutorial, you will use `ParticleInCell2` to model one of the simplest phenomena in
+# In this tutorial, you will use `ParticleInCell` to model one of the simplest phenomena in
 # plasma physics: an electrostatic (or Langmuir) oscillation. This tutorial is part of a
-# series of examples that uses `ParticleInCell2` to demonstrate the basic plasma physics
+# series of examples that uses `ParticleInCell` to demonstrate the basic plasma physics
 # concepts that are covered in [Birdsall and Langdon's classic PIC textbook](@cite
 # birdsall2004).
 #
@@ -27,10 +27,10 @@
 # For this reason, we will only model the dynamics of the electrons in our simulation.
 #
 # ## Simulating a cold electron plasma
-# We begin by loading the `ParticleInCell2` package. Additionally, we load `CairoMakie`
+# We begin by loading the `ParticleInCell` package. Additionally, we load `CairoMakie`
 # which is a backend for [`Makie`](https://makie.org) that can generate beautiful,
 # publication-quality graphics.
-using ParticleInCell2
+using ParticleInCell
 using CairoMakie
 CairoMakie.activate!(type = "svg") #hide
 set_theme!(theme_light()) #hide
@@ -76,7 +76,7 @@ scatter(
 # macroparticles. Additionally, we must pass the value of
 # `particles_per_macro`, which is used to calculate the charge and mass of the
 # macroparticles.
-electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro);
+electrons = ParticleInCell.electrons(positions, momentums, particles_per_macro);
 @test typeof(electrons) <: VariableWeightSpecies #src
 
 # Now we address the 'cell' piece of particle-in-cell by creating a `grid`. Because Langmuir
@@ -107,10 +107,10 @@ grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (periodic,));
 # field, and the number of guard cells surrounding the field.
 field_dimension = 1
 lower_guard_cells = 1
-rho = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
-phi = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
-Eedge = Field(grid, ParticleInCell2.edge, field_dimension, lower_guard_cells)
-Enode = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells);
+rho = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
+phi = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
+Eedge = Field(grid, ParticleInCell.edge, field_dimension, lower_guard_cells)
+Enode = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells);
 
 # At this point, we must choose a timestep for the simulation. We would like to use a large
 # timestep so that more of the systems dynamics can be observed with the same number of
@@ -284,16 +284,16 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
         (particles_per_macro * elec_mass) .*
         (perturb_amplitude .* sin.(positions .* wavenumber) .+ thermal_velocity .* randn.())
 
-    electrons = ParticleInCell2.electrons(positions, momentums, particles_per_macro)
+    electrons = ParticleInCell.electrons(positions, momentums, particles_per_macro)
 
     grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,))
 
     field_dimension = 1
     lower_guard_cells = 1
-    rho = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
-    phi = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
-    Eedge = Field(grid, ParticleInCell2.edge, field_dimension, lower_guard_cells)
-    Enode = Field(grid, ParticleInCell2.node, field_dimension, lower_guard_cells)
+    rho = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
+    phi = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
+    Eedge = Field(grid, ParticleInCell.edge, field_dimension, lower_guard_cells)
+    Enode = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
 
     dt = 5e-11
     charge_interp = BSplineChargeInterpolation(electrons, rho, 1)

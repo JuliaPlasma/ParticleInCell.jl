@@ -1,9 +1,9 @@
-using ParticleInCell2
+using ParticleInCell
 using Test
 using ReTestItems
 
 if length(ARGS) == 0
-    runtests(ParticleInCell2)
+    runtests(ParticleInCell)
 else
-    runtests(ParticleInCell2, tags = Symbol(ARGS[1]))
+    runtests(ParticleInCell, tags = Symbol(ARGS[1]))
 end

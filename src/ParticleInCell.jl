@@ -1,11 +1,11 @@
-module ParticleInCell2
+module ParticleInCell
 
 # Use the README as the module docs
 @doc let
     path = joinpath(dirname(@__DIR__), "README.md")
     include_dependency(path)
     read(path, String)
-end ParticleInCell2
+end ParticleInCell
 
 using FFTW
 using StaticArrays

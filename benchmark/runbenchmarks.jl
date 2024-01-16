@@ -1,6 +1,6 @@
-import ParticleInCell2
+import ParticleInCell
 using PkgBenchmark
 
-results = judge(ParticleInCell2, "main")
+results = judge(ParticleInCell, "main")
 
 export_markdown(stdout, results)

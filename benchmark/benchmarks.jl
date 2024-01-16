@@ -1,4 +1,4 @@
-using ParticleInCell2
+using ParticleInCell
 using BenchmarkTools
 using StaticArrays
 
@@ -9,10 +9,10 @@ upper_bounds = ntuple(x -> 1.0, dimension)
 num_cells = ntuple(x -> 16, dimension)
 periodic = ntuple(x -> true, dimension)
 g = UniformCartesianGrid(lower_bounds, upper_bounds, num_cells, periodic)
-rho = Field(g, ParticleInCell2.node, 1)
-phi = Field(g, ParticleInCell2.node, 1)
-Eedge = Field(g, ParticleInCell2.edge, 2)
-Enode = Field(g, ParticleInCell2.node, 2)
+rho = Field(g, ParticleInCell.node, 1)
+phi = Field(g, ParticleInCell.node, 1)
+Eedge = Field(g, ParticleInCell.edge, 2)
+Enode = Field(g, ParticleInCell.node, 2)
 
 # Create a species
 n_particles = 100

@@ -1,7 +1,7 @@
 @testitem "CommunicateGuardCells" tags = [:unit] begin
     @testset "1D" begin
         grid = UniformCartesianGrid((0.0,), (1.0,), (10,), (false,))
-        field = Field(grid, ParticleInCell2.node, 1)
+        field = Field(grid, ParticleInCell.node, 1)
 
         step = CommunicateGuardCells(field)
 

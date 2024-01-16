@@ -1,7 +1,7 @@
 using Pkg
 using Documenter, DocumenterCitations, DemoCards
 using Literate
-using ParticleInCell2
+using ParticleInCell
 
 @info "Generating examples using DemoCards"
 examples_page, postprocess_democard_cb, demo_assets =
@@ -23,7 +23,7 @@ isnothing(demo_assets) || (push!(assets, demo_assets))
 makedocs(
     plugins = [bib],
     authors = AUTHORS,
-    sitename = "ParticleInCell2.jl Documentation",
+    sitename = "ParticleInCell.jl Documentation",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
         assets = assets,
@@ -40,7 +40,7 @@ makedocs(
         "manual/index.md",
         "references.md",
     ],
-    modules = [ParticleInCell2],
+    modules = [ParticleInCell],
 )
 
 @info "Postprocessing DemoCards"

@@ -4,18 +4,18 @@
 [![CI Status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
 [![Code Coverage Statistics](https://codecov.io/gh/adamslc/ParticleInCell2.jl/branch/main/graph/badge.svg)](http://codecov.io/github/adamslc/ParticleInCell2.jl)
 
-`ParticleInCell2.jl` is a Julia package for kinetic plasma physics simulation.
+`ParticleInCell.jl` is a Julia package for kinetic plasma physics simulation.
 Specifically, it focuses on the simulation of kinetic (non-thermal) plasmas
 using particle-in-cell (PIC) algorithms. Currently, this package is in in a
 pre-1.0.0 state, and thus breaking changes should be expected. However, this
 also means that I am willing to entertain radical suggestions to improve the
-functionality of the package. If you are interested in using `ParticleInCell2`
+functionality of the package. If you are interested in using `ParticleInCell`
 for your plasma research, and you find that it does not meet you needs, please
 reach out on either GitHub, or over email, so that we can discuss how the
 package can be modified to suite your needs.
 
 ## Getting Started
-`ParticleInCell2` is currently not registered in the Julia package registry.
+`ParticleInCell` is currently not registered in the Julia package registry.
 Thus, to install this package, you should use `Pkg.develop`:
 ```julia
 using Pkg
@@ -30,7 +30,7 @@ You can view the latest documentation
  * Fast: aim to have core time of less than 1 microsecond per particle per step
    without collisions.
  * Flexible: it should be possible to implement essentially any kinetic plasma
-   simulation in `ParticleInCell2.jl`. For common types of simulations, this
+   simulation in `ParticleInCell.jl`. For common types of simulations, this
    might mean just piecing together components that are already included. More
    esoteric problems might require writing custom types that implement the
    desired algorithms. The advantage of writing this package in Julia is that

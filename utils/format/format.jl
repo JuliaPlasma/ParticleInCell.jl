@@ -1,5 +1,5 @@
 directory = basename(pwd())
-if !(directory in ["ParticleInCell2", "ParticleInCell2.jl"])
+if !(directory in ["ParticleInCell", "ParticleInCell.jl"])
     @error "Format script should be run the project root directory"
     exit(1)
 end

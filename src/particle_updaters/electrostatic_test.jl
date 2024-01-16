@@ -2,7 +2,7 @@
     using StaticArrays
 
     g = UniformCartesianGrid((0.0,), (1.0,), (16,), (true,))
-    E = Field(g, ParticleInCell2.node, 1, 1)
+    E = Field(g, ParticleInCell.node, 1, 1)
     E.values .= 0.1
 
     positions = fill(0.5, 1, 1)
