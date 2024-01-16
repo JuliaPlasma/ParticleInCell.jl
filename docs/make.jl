@@ -12,7 +12,7 @@ PROJECT_TOML = Pkg.TOML.parsefile(joinpath(@__DIR__, "..", "Project.toml"))
 VERSION = PROJECT_TOML["version"]
 NAME = PROJECT_TOML["name"]
 AUTHORS = join(PROJECT_TOML["authors"], ", ")
-GITHUB = "https://github.com/adamslc/ParticleInCell2.jl"
+GITHUB = "https://github.com/JuliaPlasma/ParticleInCell.jl"
 
 @info "Making docs"
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"), style = :authoryear)
@@ -47,4 +47,4 @@ makedocs(
 postprocess_democard_cb()
 
 @info "Deploying docs"
-deploydocs(repo = "github.com/adamslc/ParticleInCell2.jl.git")
+deploydocs(repo = "github.com/JuliaPlasma/ParticleInCell.jl.git")

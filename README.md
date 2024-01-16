@@ -1,7 +1,7 @@
-![ParticleInCell.jl Logo](https://raw.githubusercontent.com/adamslc/ParticleInCell2.jl/main/logo/logo.gif)
+![ParticleInCell.jl Logo](https://raw.githubusercontent.com/JuliaPlasma/ParticleInCell.jl/main/logo/logo.gif)
 
-[![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://adamslc.github.io/ParticleInCell2.jl/dev)
-[![CI Status](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/adamslc/ParticleInCell2.jl/actions/workflows/CI.yml)
+[![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaplasma.github.io/ParticleInCell.jl/dev)
+[![CI Status](https://github.com/JuliaPlasma/ParticleInCell.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaPlasma/ParticleInCell.jl/actions/workflows/CI.yml)
 [![Code Coverage Statistics](https://codecov.io/gh/adamslc/ParticleInCell2.jl/branch/main/graph/badge.svg)](http://codecov.io/github/adamslc/ParticleInCell2.jl)
 
 `ParticleInCell.jl` is a Julia package for kinetic plasma physics simulation.
@@ -19,7 +19,7 @@ package can be modified to suite your needs.
 Thus, to install this package, you should use `Pkg.develop`:
 ```julia
 using Pkg
-Pkg.develop(url="https://github.com/adamslc/ParticleInCell2.jl")
+Pkg.develop(url="https://github.com/JuliaPlasma/ParticleInCell.jl")
 ```
 
 ## Documentation
