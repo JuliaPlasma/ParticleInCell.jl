@@ -2,7 +2,6 @@
 
 [![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaplasma.github.io/ParticleInCell.jl/dev)
 [![CI Status](https://github.com/JuliaPlasma/ParticleInCell.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaPlasma/ParticleInCell.jl/actions/workflows/CI.yml)
-[![Code Coverage Statistics](https://codecov.io/gh/adamslc/ParticleInCell2.jl/branch/main/graph/badge.svg)](http://codecov.io/github/adamslc/ParticleInCell2.jl)
 
 `ParticleInCell.jl` is a Julia package for kinetic plasma physics simulation.
 Specifically, it focuses on the simulation of kinetic (non-thermal) plasmas
@@ -24,7 +23,7 @@ Pkg.develop(url="https://github.com/JuliaPlasma/ParticleInCell.jl")
 
 ## Documentation
 You can view the latest documentation
-[here](https://adamslc.github.io/ParticleInCell2.jl/dev).
+[here](https://juliaplasma.github.io/ParticleInCell.jl/dev).
 
 ## Goals
  * Fast: aim to have core time of less than 1 microsecond per particle per step
