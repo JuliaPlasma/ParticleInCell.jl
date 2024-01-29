@@ -60,4 +60,7 @@ export ElectrostaticParticlePush
 include("particle_updaters/boris.jl")
 export BorisParticlePush
 
+include("simulation.jl")
+export Simulation, create_electrostatic_simulation
+
 end
