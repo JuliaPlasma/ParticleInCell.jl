@@ -56,3 +56,9 @@ function step!(step::AverageEdgesToNodes{F}) where {T,D,F<:AbstractField{T,D}}
         end
     end
 end
+
+struct ZeroField{F} <: AbstractSimulationStep
+    field::F
+end
+
+step!(step::ZeroField) = step.field.values .= 0
