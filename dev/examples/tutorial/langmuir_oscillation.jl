@@ -32,13 +32,6 @@ dx = sim_length / num_cells
 periodic = true
 grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (periodic,));
 
-field_dimension = 1
-lower_guard_cells = 1
-rho = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-phi = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-Eedge = Field(grid, ParticleInCell.edge, field_dimension, lower_guard_cells)
-Enode = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells);
-
 epsilon_0 = 8.8e-12
 elec_charge = 1.6e-19
 elec_mass = 9e-31
@@ -47,16 +40,9 @@ expected_plasma_period = 2pi / expected_plasma_freq
 
 dt = 5e-11
 
-charge_interp = BSplineChargeInterpolation(electrons, rho, 1)
-comm_rho = CommunicateGuardCells(rho, true)
-field_solve = PoissonSolveFFT(rho, phi)
-comm_phi = CommunicateGuardCells(phi)
-finite_diff = FiniteDifferenceToEdges(phi, Eedge)
-comm_Eedge = CommunicateGuardCells(Eedge)
-elec_ave = AverageEdgesToNodes(Eedge, Enode)
-comm_Enode = CommunicateGuardCells(Enode)
-push = ElectrostaticParticlePush(electrons, Enode, dt)
-comm_electrons = CommunicateSpecies(electrons, grid);
+sim, fields = create_electrostatic_simulation(grid, [electrons], dt)
+
+Enode = fields[:Enode]
 
 n_steps = 1000
 
@@ -69,19 +55,7 @@ for n = 1:n_steps
         electric_field_energy[n] += (dx * epsilon_0 / 2) * (Enode.values[I])^2
     end
 
-    # TODO
-    rho.values .= 0
-
-    step!(charge_interp)
-    step!(comm_rho)
-    step!(field_solve)
-    step!(comm_phi)
-    step!(finite_diff)
-    step!(comm_Eedge)
-    step!(elec_ave)
-    step!(comm_Enode)
-    step!(push)
-    step!(comm_electrons)
+    step!(sim)
 end
 
 times = collect(range(1, n_steps)) .* dt
@@ -156,24 +130,9 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
 
     grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,))
 
-    field_dimension = 1
-    lower_guard_cells = 1
-    rho = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-    phi = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-    Eedge = Field(grid, ParticleInCell.edge, field_dimension, lower_guard_cells)
-    Enode = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-
     dt = 5e-11
-    charge_interp = BSplineChargeInterpolation(electrons, rho, 1)
-    comm_rho = CommunicateGuardCells(rho, true)
-    field_solve = PoissonSolveFFT(rho, phi)
-    comm_phi = CommunicateGuardCells(phi)
-    finite_diff = FiniteDifferenceToEdges(phi, Eedge)
-    comm_Eedge = CommunicateGuardCells(Eedge)
-    elec_ave = AverageEdgesToNodes(Eedge, Enode)
-    comm_Enode = CommunicateGuardCells(Enode)
-    push = ElectrostaticParticlePush(electrons, Enode, dt)
-    comm_electrons = CommunicateSpecies(electrons, grid)
+    sim, fields = create_electrostatic_simulation(grid, [electrons], dt)
+    Enode = fields[:Enode]
 
     n_steps = 1000
     electric_field_energy = Vector{Float64}(undef, n_steps)
@@ -186,19 +145,7 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
             electric_field_energy[n] += (dx * epsilon_0 / 2) * (Enode.values[I])^2
         end
 
-        # TODO
-        rho.values .= 0
-
-        step!(charge_interp)
-        step!(comm_rho)
-        step!(field_solve)
-        step!(comm_phi)
-        step!(finite_diff)
-        step!(comm_Eedge)
-        step!(elec_ave)
-        step!(comm_Enode)
-        step!(push)
-        step!(comm_electrons)
+        step!(sim)
     end
 
     freqs = fftfreq(n_steps, 1 / dt) .* 2pi
