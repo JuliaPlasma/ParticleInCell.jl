@@ -8,13 +8,18 @@ function step!(sim::Simulation)
     end
 end
 
-function create_electrostatic_simulation(grid, species::Vector{S}, dt; interpolation_order::Int=1) where {D,V,S<:AbstractSpecies{D,V}}
+function create_electrostatic_simulation(
+    grid,
+    species::Vector{S},
+    dt;
+    interpolation_order::Int = 1,
+) where {D,V,S<:AbstractSpecies{D,V}}
     sim = Simulation(AbstractSimulationStep[])
 
     # Create fields
     lower_guard_cells = div(interpolation_order, 2) + 1
-    rho = Field(grid, ParticleInCell.node,   V, lower_guard_cells)
-    phi = Field(grid, ParticleInCell.node,   V, lower_guard_cells)
+    rho = Field(grid, ParticleInCell.node, V, lower_guard_cells)
+    phi = Field(grid, ParticleInCell.node, V, lower_guard_cells)
     Eedge = Field(grid, ParticleInCell.edge, V, lower_guard_cells)
     Enode = Field(grid, ParticleInCell.node, V, lower_guard_cells)
 
