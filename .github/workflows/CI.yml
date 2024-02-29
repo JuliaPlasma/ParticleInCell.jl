@@ -10,8 +10,9 @@ jobs:
     name: Initial checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/cache@v1
         with:
           version: '1.9'
           arch: x64
@@ -38,21 +39,12 @@ jobs:
         arch:    [x64]
         test_subset: ['unit', 'integration']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: actions/cache@v3
-        env:
-          cache-name: cache-artifacts
-        with:
-          path: ~/.julia/artifacts
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
+      - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
 
       - uses: adamslc/julia-runtest@main
@@ -62,7 +54,7 @@ jobs:
       - uses: julia-actions/julia-processcoverage@v1
         with:
           directories: 'src,ext'
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: lcov.info
@@ -75,8 +67,9 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/cache@v1
         with:
           version: '1.9'
       - name: Install dependencies
