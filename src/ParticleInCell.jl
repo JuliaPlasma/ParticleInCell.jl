@@ -10,6 +10,8 @@ end ParticleInCell
 using FFTW
 using StaticArrays
 using StructEquality
+using SparseArrays
+using LinearSolve
 
 import Base: eachindex
 
@@ -46,6 +48,9 @@ export FiniteDifferenceToEdges, AverageEdgesToNodes
 
 include("poisson.jl")
 export PoissonSolveFFT
+
+include("linear_solve.jl")
+export LinearSolveStep
 
 include("interpolation.jl")
 export BSplineChargeInterpolation

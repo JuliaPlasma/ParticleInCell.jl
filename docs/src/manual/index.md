@@ -50,6 +50,7 @@ step!
 ```@docs
 ElectrostaticParticlePush
 BorisParticlePush
+LinearSolveStep
 ```
 
 ## Misc
