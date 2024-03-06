@@ -53,5 +53,5 @@ function step!(step::LinearSolveStep)
     step.linear_solver.b = reshape(view(step.b.values, axes(step.b)...), step.matrix_size)
     sol = solve!(step.linear_solver)
     xview = view(step.x.values, axes(step.x)...)
-    xview .= reshape(sol.u, axes(step.x))
+    xview .= reshape(sol.u, length.(axes(step.x)))
 end
