@@ -26,6 +26,13 @@ species = VariableWeightSpecies(positions, momentums, weights, 1.0, 1.0)
 
 const SUITE = BenchmarkGroup()
 
+SUITE["field coordinate transformations"]["cell_index_to_cell_coords1"] =
+    @benchmarkable ParticleInCell.cell_index_to_cell_coords(rho, (3, 3))
+SUITE["field coordinate transformations"]["cell_index_to_cell_coords2"] =
+    @benchmarkable ParticleInCell.cell_index_to_cell_coords(rho, (3, 3), 1)
+SUITE["field coordinate transformations"]["cell_index_to_cell_coords3"] =
+    @benchmarkable ParticleInCell.cell_index_to_cell_coords(Eedge, (3, 3), 2)
+
 bs_charge = BSplineChargeInterpolation(species, rho, 1)
 SUITE["charge_dep"] = BenchmarkGroup(["interpolation", "particle", "field"])
 SUITE["charge_dep"]["creation"] =

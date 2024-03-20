@@ -35,7 +35,7 @@ export AbstractSpecies,
     electrons
 
 include("field.jl")
-export Field
+export Field, num_elements
 
 abstract type AbstractSimulationStep end
 function step!(::T) where {T<:AbstractSimulationStep}
