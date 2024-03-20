@@ -9,7 +9,7 @@ numbering systems that can refer to a location in the simulation domain:
  2. The 'cell coordinates' of a point is the non-dimensional location of the point
     in units of cell lengths. This value can range from 0 to num_cells - 1,
     or outside this range if guard cells are included. The value will
-    typically have the type `NTuple{N, Int}`.
+    typically have the type `NTuple{N, Int}` or `NTuple{N, T}` with `T <: Real`.
  3. The 'cell index' of a point is the `CartesianIndex` that can be used to
     index into field arrays at that point. This value must strictly be
     confined to `axes(field.values)`, which, for any given dimension, will
@@ -51,12 +51,10 @@ orth_vec(i, ::Val{3}) = ntuple(j -> j == i ? 0 : 1, 3)
 orth_vec(::Any, ::Union{Val{1},Val{2}}) = error("orth_vec only makes sense in 3D")
 
 """
-    cell_coords_to_phys_coords(grid, idxs, [offset, component])
+    cell_coords_to_phys_coords(grid, idxs)
 
 Converts the cell coordinates `idxs` to a physical coordinate using the geometry
-specified in `grid`. Optionally, an offset and component can be specified to get
-the physical coordinates of a specific `edge` or `face` of the cell. The component
-argument is one-indexed.
+specified in `grid`.
 
 For more information on the different types of coordinate systems, see
 `AbstractGrid`.

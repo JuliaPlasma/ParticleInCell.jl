@@ -23,10 +23,10 @@ grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (periodic,));
 
 field_dimension = 1
 lower_guard_cells = 10
-rho = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-phi = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells)
-Eedge = Field(grid, ParticleInCell.edge, field_dimension, lower_guard_cells)
-Enode = Field(grid, ParticleInCell.node, field_dimension, lower_guard_cells);
+rho = Field(grid, NodeOffset(), field_dimension, lower_guard_cells)
+phi = Field(grid, NodeOffset(), field_dimension, lower_guard_cells)
+Eedge = Field(grid, NodeOffset(), field_dimension, lower_guard_cells)
+Enode = Field(grid, NodeOffset(), field_dimension, lower_guard_cells);
 
 num_particles_per_stream = div(num_cells * particles_per_cell, 2)
 particles_per_macro = nom_density * sim_length / num_particles_per_stream

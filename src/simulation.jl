@@ -18,10 +18,10 @@ function create_electrostatic_simulation(
 
     # Create fields
     lower_guard_cells = div(interpolation_order, 2) + 1
-    rho = Field(grid, ParticleInCell.node, V, lower_guard_cells)
-    phi = Field(grid, ParticleInCell.node, V, lower_guard_cells)
-    Eedge = Field(grid, ParticleInCell.edge, V, lower_guard_cells)
-    Enode = Field(grid, ParticleInCell.node, V, lower_guard_cells)
+    rho = Field(grid, NodeOffset(), V, lower_guard_cells)
+    phi = Field(grid, NodeOffset(), V, lower_guard_cells)
+    Eedge = Field(grid, EdgeOffset(), V, lower_guard_cells)
+    Enode = Field(grid, NodeOffset(), V, lower_guard_cells)
 
     # Zero out charge density then deposit and communicate rho
     push!(sim.steps, ZeroField(rho))

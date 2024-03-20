@@ -11,8 +11,8 @@
     end
 
     g = UniformCartesianGrid((0.0,), (1.0,), (10,), (true,))
-    rho = Field(g, ParticleInCell.node, 1)
-    phi = Field(g, ParticleInCell.node, 1)
+    rho = Field(g, NodeOffset(), 1)
+    phi = Field(g, NodeOffset(), 1)
     s = VariableWeightSpecies(fill(0.5, 1, 1), fill(0.0, 1, 1), [1.0], 1.0, 1.0)
 
     bs_interp = BSplineChargeInterpolation(s, rho, 1)

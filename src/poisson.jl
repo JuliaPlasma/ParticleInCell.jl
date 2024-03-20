@@ -7,7 +7,7 @@ struct PoissonSolveFFT{T,D,G,P,F<:AbstractField} <: AbstractSimulationStep
 
     fft_plan::P
 
-    function PoissonSolveFFT(rho::F, phi::F) where {T,N,D,G,F<:AbstractField{T,N,D,G}}
+    function PoissonSolveFFT(rho::F, phi::F) where {T,N,O,D,G,F<:AbstractField{T,N,O,D,G}}
         # This restriction could possibly be relaxed to just require compatible grids...
         @assert rho.grid === phi.grid
         # Currently only supports periodic boundary conditions...

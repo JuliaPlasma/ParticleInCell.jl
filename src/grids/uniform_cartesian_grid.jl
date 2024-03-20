@@ -19,23 +19,8 @@ end
     return (grid.upper_bounds .- grid.lower_bounds) ./ grid.num_cells
 end
 
-# TODO: inline this function once the offsets become singletons, and this
-# function becomes performant
-function cell_coords_to_phys_coords(
-    grid::UniformCartesianGrid{D},
-    idxs,
-    offset = node,
-    component::Int = 1,
-) where {D}
-    node_coords = grid.lower_bounds .+ idxs .* cell_lengths(grid)
-
-    if offset == node
-        return node_coords
-    elseif offset == edge
-        return node_coords .+ cell_lengths(grid) ./ 2 .* unit_vec(component, Val(D))
-    elseif offset == face
-        return node_coords .+ cell_lengths(grid) ./ 2 .* orth_vec(component, Val(D))
-    end
+@inline function cell_coords_to_phys_coords(grid::UniformCartesianGrid, idxs)
+    return grid.lower_bounds .+ idxs .* cell_lengths(grid)
 end
 
 @inline function phys_coords_to_cell_coords(grid::UniformCartesianGrid, xs)

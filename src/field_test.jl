@@ -5,10 +5,10 @@
         (10, 10, 10),
         (true, true, true),
     )
-    scalar_node_field = Field(grid, ParticleInCell.node, 1, 3)
-    vector_node_field = Field(grid, ParticleInCell.node, 3)
-    vector_edge_field = Field(grid, ParticleInCell.edge, 3)
-    vector_face_field = Field(grid, ParticleInCell.face, 3)
+    scalar_node_field = Field(grid, NodeOffset(), 1, 3)
+    vector_node_field = Field(grid, NodeOffset(), 3)
+    vector_edge_field = Field(grid, EdgeOffset(), 3)
+    vector_face_field = Field(grid, FaceOffset(), 3)
 
     @test num_elements(scalar_node_field) == 1
     @test num_elements(vector_node_field) == 3

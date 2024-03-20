@@ -1,17 +1,22 @@
-struct FiniteDifferenceToEdges{F,NT} <: AbstractSimulationStep
-    nodal_field::F
-    edge_field::F
+struct FiniteDifferenceToEdges{F1,F2,NT} <: AbstractSimulationStep
+    nodal_field::F1
+    edge_field::F2
 
     edge_lengths::NT
 
-    function FiniteDifferenceToEdges(nodal_field::F, edge_field::F) where {F}
-        @assert nodal_field.offset == node
-        @assert edge_field.offset == edge
+    function FiniteDifferenceToEdges(
+        nodal_field::Field{T1,N1,NodeOffset},
+        edge_field::Field{T2,N2,EdgeOffset},
+    ) where {T1,T2,N1,N2}
         @assert edge_field.upper_guard_cells >= 1
 
         edge_lengths = cell_lengths(nodal_field.grid)
 
-        new{F,typeof(edge_lengths)}(nodal_field, edge_field, edge_lengths)
+        new{typeof(nodal_field),typeof(edge_field),typeof(edge_lengths)}(
+            nodal_field,
+            edge_field,
+            edge_lengths,
+        )
     end
 end
 
@@ -31,17 +36,18 @@ function step!(step::FiniteDifferenceToEdges{F}) where {T,D,F<:AbstractField{T,D
     end
 end
 
-struct AverageEdgesToNodes{F} <: AbstractSimulationStep
-    edge_field::F
-    nodal_field::F
+struct AverageEdgesToNodes{F1,F2} <: AbstractSimulationStep
+    edge_field::F1
+    nodal_field::F2
 
-    function AverageEdgesToNodes(edge_field::F, nodal_field::F) where {F}
-        @assert edge_field.offset == edge
-        @assert nodal_field.offset == node
+    function AverageEdgesToNodes(
+        edge_field::Field{T1,N1,EdgeOffset},
+        nodal_field::Field{T2,N2,NodeOffset},
+    ) where {T1,T2,N1,N2}
         @assert edge_field.lower_guard_cells >= 1
         @assert edge_field.upper_guard_cells >= 1
 
-        new{F}(edge_field, nodal_field)
+        new{typeof(edge_field),typeof(nodal_field)}(edge_field, nodal_field)
     end
 end
 
