@@ -16,7 +16,7 @@ using LinearSolve
 import Base: eachindex
 
 include("grids/grid.jl")
-export AbstractGrid, UniformCartesianGrid, node, edge, face
+export AbstractGrid, UniformCartesianGrid
 
 include("species/species.jl")
 export AbstractSpecies,
@@ -35,7 +35,7 @@ export AbstractSpecies,
     electrons
 
 include("field.jl")
-export Field, num_elements
+export Field, NodeOffset, EdgeOffset, FaceOffset, CenterOffset, num_elements
 
 abstract type AbstractSimulationStep end
 function step!(::T) where {T<:AbstractSimulationStep}

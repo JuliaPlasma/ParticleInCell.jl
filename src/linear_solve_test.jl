@@ -6,8 +6,8 @@
             dx = L / N
             grid = UniformCartesianGrid((0.0,), (L,), (N,), (true,))
 
-            source_field = Field(grid, ParticleInCell.node, 1)
-            solve_field = Field(grid, ParticleInCell.node, 1)
+            source_field = Field(grid, NodeOffset(), 1)
+            solve_field = Field(grid, NodeOffset(), 1)
 
             step = LinearSolveStep(solve_field, source_field, stencil ./ ((L / N)^2))
 
@@ -67,8 +67,8 @@
 
     @testset "1D grounded boundaries" begin
         grid = UniformCartesianGrid((0.0,), (1.0,), (16,), (false,))
-        source_field = Field(grid, ParticleInCell.node, 1, 0, 0)
-        solve_field = Field(grid, ParticleInCell.node, 1, 0, 0)
+        source_field = Field(grid, NodeOffset(), 1, 0, 0)
+        solve_field = Field(grid, NodeOffset(), 1, 0, 0)
 
         step = LinearSolveStep(solve_field, source_field, [-1, 2, -1])
 

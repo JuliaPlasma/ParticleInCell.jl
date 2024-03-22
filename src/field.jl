@@ -1,11 +1,10 @@
-abstract type AbstractField{T,N,D,G} end
+abstract type AbstractField{T,N,O,D,G} end
 
-# TODO: Consider making these singleton types to help with dispatch
-@enum GridOffset begin
-    node
-    edge
-    face
-end
+abstract type GridOffset end
+struct NodeOffset <: GridOffset end
+struct EdgeOffset <: GridOffset end
+struct FaceOffset <: GridOffset end
+struct CenterOffset <: GridOffset end
 
 """
     Field(grid, offset, num_elements,[ lower_guard_cells = 0,
@@ -13,10 +12,10 @@ end
 
 Stores the values of a field.
 """
-struct Field{T,N,D,D1,G} <: AbstractField{T,N,D,G}
+struct Field{T,N,O,D,D1,G} <: AbstractField{T,N,O,D,G}
     values::Array{T,D1}
     grid::G
-    offset::GridOffset
+    offset::O
 
     lower_guard_cells::Int
     upper_guard_cells::Int
@@ -24,12 +23,12 @@ struct Field{T,N,D,D1,G} <: AbstractField{T,N,D,G}
 
     function Field(
         grid::G,
-        offset::GridOffset,
+        offset::O,
         num_elements::Int,
         lower_guard_cells = 0,
         upper_guard_cells = lower_guard_cells + 1,
         T = Float64,
-    ) where {D,G<:AbstractGrid{D}}
+    ) where {D,O<:GridOffset,G<:AbstractGrid{D}}
 
         index_offset = ntuple(_ -> lower_guard_cells + 1, D)
         values = zeros(
@@ -38,7 +37,7 @@ struct Field{T,N,D,D1,G} <: AbstractField{T,N,D,G}
             num_elements,
         )
 
-        new{T,num_elements,D,D + 1,G}(
+        new{T,num_elements,O,D,D + 1,G}(
             values,
             grid,
             offset,
@@ -51,10 +50,10 @@ end
 
 num_elements(f::Field{T,N}) where {T,N} = N
 
-function Base.show(io::IO, f::Field{T,N,D,D1,G}) where {T,N,D,D1,G}
+function Base.show(io::IO, f::Field{T,N,O,D,D1,G}) where {T,N,O,D,D1,G}
     print(
         io,
-        "Field(grid=$(f.grid), offset=$(f.offset),
+        "Field(grid=$(f.grid), offset=$(O),
 num_elements=$(N), T=$T",
     )
 end
@@ -77,35 +76,37 @@ end
 @inline Base.firstindex(f::Field) = firstindex(f.values)
 
 @inline function cell_index_to_cell_coords(f::Field, I)
-    # align_offset = f.offset == edge ? 0.5 : 0.0
-    # return Tuple(I) .- f.index_offset .+ align_offset
     return Tuple(I) .- f.index_offset
 end
 
-@inline function cell_index_to_cell_coords(f::Field{T,N}, I, dim) where {T,N}
-    node_cell_coords = cell_index_to_cell_coords(f, I)
+@inline function cell_index_to_cell_coords(f::Field{T,N,NodeOffset}, I, dim) where {T,N}
+    return cell_index_to_cell_coords(f, I)
+end
 
-    if f.offset == node
-        return node_cell_coords
-    elseif f.offset == edge
-        return node_cell_coords .+ 0.5 .* unit_vec(dim, Val(N))
-    elseif f.offset == face
-        return node_cell_coords .+ 0.5 .* orth_vec(dim, Val(N))
-    end
+@inline function cell_index_to_cell_coords(f::Field{T,N,EdgeOffset}, I, dim) where {T,N}
+    return cell_index_to_cell_coords(f, I) .+ 0.5 .* unit_vec(dim, Val(N))
+end
+
+@inline function cell_index_to_cell_coords(f::Field{T,N,FaceOffset}, I, dim) where {T,N}
+    return cell_index_to_cell_coords(f, I) .+ 0.5 .* orth_vec(dim, Val(N))
+end
+
+@inline function cell_index_to_cell_coords(f::Field{T,N,CenterOffset}, I, dim) where {T,N}
+    return cell_index_to_cell_coords(f, I) .+ 0.5
 end
 
 @inline function cell_coords_to_cell_index(f::Field, idxs)
     return CartesianIndex(Tuple(floor.(Int, idxs) .+ f.index_offset))
 end
 
+extra_width_func(f::Field{T,N,NodeOffset}) where {T,N} = 0
+extra_width_func(f) = 1
+
 @inline function phys_coords_to_cell_index_ittr(f::Field, xs, width::Int)
     cell_coords = phys_coords_to_cell_coords(f.grid, xs)
     cell_index = Tuple(cell_coords_to_cell_index(f, cell_coords))
 
-    extra_width = 0
-    if f.offset == edge || f.offset == face
-        extra_width = 1
-    end
+    extra_width = extra_width_func(f)
 
     # Need to add one to lower bound to account for the fact that the particle
     # is 'in' the cell at cell_index.

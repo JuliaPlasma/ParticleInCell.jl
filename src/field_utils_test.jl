@@ -1,8 +1,8 @@
 @testitem "FiniteDifferenceToEdges" tags = [:unit] begin
     @testset "1D" begin
         grid = UniformCartesianGrid((0.0,), (1.0,), (10,), (false,))
-        nodal_field = Field(grid, ParticleInCell.node, 1)
-        edge_field = Field(grid, ParticleInCell.edge, 1)
+        nodal_field = Field(grid, NodeOffset(), 1)
+        edge_field = Field(grid, EdgeOffset(), 1)
 
         step = FiniteDifferenceToEdges(nodal_field, edge_field)
         @test step.edge_lengths == (0.1,)
@@ -21,8 +21,8 @@ end
 @testitem "AverageEdgesToNodes" tags = [:unit] begin
     @testset "1D" begin
         grid = UniformCartesianGrid((0.0,), (1.0,), (10,), (false,))
-        nodal_field = Field(grid, ParticleInCell.node, 1, 1)
-        edge_field = Field(grid, ParticleInCell.edge, 1, 1)
+        nodal_field = Field(grid, NodeOffset(), 1, 1)
+        edge_field = Field(grid, EdgeOffset(), 1, 1)
 
         step = AverageEdgesToNodes(edge_field, nodal_field)
 

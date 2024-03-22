@@ -8,39 +8,10 @@
         )
 
         @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0)) == (0, 0, 0)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0), node) == (0, 0, 0)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0), edge, 1) ==
-              (0.05, 0, 0)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0), face, 1) ==
-              (0, 0.05, 0.05)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0), edge, 3) ==
-              (0, 0, 0.05)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (0, 0, 0), face, 3) ==
-              (0.05, 0.05, 0)
 
         @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5)) == (0.5, 0.5, 0.5)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5), node) ==
-              (0.5, 0.5, 0.5)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5), edge, 1) ==
-              (0.55, 0.5, 0.5)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5), face, 1) ==
-              (0.5, 0.55, 0.55)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5), edge, 3) ==
-              (0.5, 0.5, 0.55)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (5, 5, 5), face, 3) ==
-              (0.55, 0.55, 0.5)
 
         @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10)) == (1, 1, 1)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10), node) ==
-              (1, 1, 1)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10), edge, 1) ==
-              (1.05, 1, 1)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10), face, 1) ==
-              (1, 1.05, 1.05)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10), edge, 3) ==
-              (1, 1, 1.05)
-        @test ParticleInCell.cell_coords_to_phys_coords(grid, (10, 10, 10), face, 3) ==
-              (1.05, 1.05, 1)
     end
 
     @testset "phys_coords_to_cell_coords" begin

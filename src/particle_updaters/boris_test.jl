@@ -4,8 +4,8 @@
 
     @testset "2D" begin
         g = UniformCartesianGrid((0.0,), (1.0,), (16,), (true,))
-        E = Field(g, ParticleInCell.node, 1, 1)
-        B = Field(g, ParticleInCell.node, 1, 1)
+        E = Field(g, NodeOffset(), 1, 1)
+        B = Field(g, NodeOffset(), 1, 1)
 
         positions = [SVector(0.5)]
         momentums = [SVector(0.01, 0.0)]

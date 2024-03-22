@@ -147,13 +147,15 @@ struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
 
     interp_func::IF
 
-    function BSplineChargeInterpolation(species::S, rho::F, bspline_degree::Int) where {S,F}
-        @assert rho.offset == node
-
+    function BSplineChargeInterpolation(
+        species::S,
+        rho::Field{T,N,NodeOffset},
+        bspline_degree::Int,
+    ) where {T,N,S}
         interp_width = div(bspline_degree, 2) + 1
         interp_func = select_bs_interp(bspline_degree)
 
-        new{S,F,typeof(interp_func)}(
+        new{S,typeof(rho),typeof(interp_func)}(
             species,
             rho,
             bspline_degree,
