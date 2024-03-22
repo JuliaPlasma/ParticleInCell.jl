@@ -33,7 +33,15 @@
 using ParticleInCell
 using CairoMakie
 CairoMakie.activate!(type = "svg") #hide
-set_theme!(theme_light()) #hide
+docs_theme = Theme(
+    fontsize = 20,
+    fonts = (; regular = "Lato", bold = "Lato Bold"),
+    palette = (color = [:black, :red, :blue],),
+    Axis = (xgridvisible = false, ygridvisible = false),
+    Scatter = (; cycle = [:color]),
+    Lines = (; cycle = [:color]),
+)
+set_theme!(docs_theme) #hide
 using Test #src
 
 # We begin by creating some electrons to move in the simulation. For even a tiny simulation
@@ -62,15 +70,16 @@ momentums = (particles_per_macro * elec_mass * amplitude) .* sin.(positions .* k
 
 # We can visualize the initial condition of the electron macroparticle by plotting the
 # initial phase space.
-scatter(
-    positions,
-    momentums;
-    axis = (;
-        title = "Electron phase space",
-        xlabel = "Position (m)",
-        ylabel = "Momentum (kg m / s)",
-    ),
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Electron phase space",
+    xlabel = "Position (m)",
+    ylabel = "Momentum (arb. units)",
+    limits = ((0, 1), nothing),
 )
+scatter!(ax, positions, momentums ./ maximum(momentums))
+fig
 
 # Finally, we create a `VariableWeightSpecies` which holds the all of the
 # macroparticles. Additionally, we must pass the value of
@@ -106,15 +115,17 @@ elec_mass = 9e-31
 expected_plasma_freq = sqrt(number_density * elec_charge^2 / elec_mass / epsilon_0)
 expected_plasma_period = 2pi / expected_plasma_freq
 
-# Once again, this is not a computationally demanding simulation, and so we will choose a
-# relatively small timestep for improve numerical accuracy. You can play with increasing
-# the timestep, and see when the simulation results begin to deteriorate.
-dt = 5e-11
+# In order for the simulation to be accurate, there must be several timesteps per
+# plasma period (or equivalently, several timesteps per inverse plasma frequency).
+# For now, we will arbitrarily choose to have 100 timesteps per plasma period, and
+# later, we will explore how changing the time step effects the accuracy of the
+# simulation.
+dt = 0.01 / expected_plasma_freq
 
 # Now we need to set up the fields required for the electrostatic PIC simulation,
 # as well as specify the exact steps that will occur during each step..
 # To do this, we will use a helper function to create the fields and steps.
-sim, fields = create_electrostatic_simulation(grid, [electrons], dt)
+sim, fields = create_electrostatic_simulation(grid, [electrons], dt);
 
 # The variable `sim` holds the steps, and `fields` is a named tuple of the rho,
 # phi, and electric fields (actually two electric fields, one at the edge of each grid
@@ -122,7 +133,7 @@ sim, fields = create_electrostatic_simulation(grid, [electrons], dt)
 # PIC method, but you can find more details in the theory section of the manual.
 # However, we will need the nodal electric field later in the tutorial, so we assign
 # that field to its own variable.
-Enode = fields[:Enode]
+Enode = fields[:Enode];
 
 # Now we are ready to run the simulation. We will simulate the plasma for 1000
 # timesteps, and at each step, we will calculate the electric field energy,
@@ -131,7 +142,7 @@ Enode = fields[:Enode]
 # ```
 # This field energy will oscillate as the electrons move in and out of
 # equilibrium, and so we can use it to observe the Langmuir oscillation.
-n_steps = 1000
+n_steps = 10000
 
 electric_field_energy = Vector{Float64}(undef, n_steps)
 
@@ -146,12 +157,17 @@ for n = 1:n_steps
 end
 
 # We can now visualize the electric field energy to see the plasma oscillation.
-times = collect(range(1, n_steps)) .* dt
-lines(
-    times,
-    electric_field_energy;
-    axis = (; title = "Electric Field Energy", xlabel = "Time (s)", ylabel = "Energy"),
+normalized_times = collect(range(1, n_steps)) .* dt .* expected_plasma_freq
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Electric Field Energy",
+    xlabel = "Normalized Time",
+    ylabel = "Energy",
+    limits = ((0, 100), nothing),
 )
+lines!(normalized_times, electric_field_energy)
+fig
 
 # Notice that the electric field energy is slowly growing over time, which is
 # unphysical. We will discuss where this numerical instability comes from--
@@ -163,102 +179,104 @@ using FFTW
 freqs = fftfreq(n_steps, 1 / dt) .* 2pi
 freq_amps = abs.(fft(electric_field_energy))
 
-lines(
-    freqs,
-    freq_amps;
-    axis = (;
-        title = "Electric Field Energy Frequency Spectrum",
-        xlabel = "Frequency (1/s)",
-        ylabel = "Amplitude",
-    ),
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Electric Field Energy Spectrum",
+    xlabel = "Frequency",
+    ylabel = "Amplitude",
 )
+lines!(ax, freqs, freq_amps)
+fig
 
 # It is hard to see what is happening at the low frequencies, so let's zoom
 # in on the positive low frequencies.
-cutoff_index = round(Int, n_steps * 0.05)
-lines(
-    freqs[1:cutoff_index],
-    freq_amps[1:cutoff_index];
-    axis = (;
-        title = "Electric Field Energy Frequency Spectrum",
-        xlabel = "Frequency (1/s)",
-        ylabel = "Amplitude",
-    ),
+cutoff_index = round(Int, n_steps * 0.005)
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Electric Field Energy Spectrum",
+    xlabel = "Frequency",
+    ylabel = "Amplitude",
 )
+lines!(ax, freqs[1:cutoff_index], freq_amps[1:cutoff_index])
+fig
 
 # Next, we find the maximum frequency. We don't care about the spike at zero frequency (that
 # is just a consequence of the electric field energy being a strictly positive quantity) so
-# we first set its amplitude to zero, and then find the largest remaining amplitude, and
-# it's corresponding frequency.
-freq_amps[1] = 0
+# we will zero out all of the frequencies below ``5 \times 10^8`` Hz. We then
+# find the largest remaining amplitude, and it's corresponding frequency.
+freq_amps .= ifelse.(freqs .< 5e8, 0, freq_amps)
 max_index = findmax(freq_amps)[2]
 max_freq = freqs[max_index]
 
 ## Divide by 2 because the electric field energy goes through a maximum twice
 ## per plasma oscillation, and take the absolute value because we don't care
 ## about the phase of the oscillation.
-plasma_freq = abs(max_freq / 2)
+measured_plasma_freq = abs(max_freq / 2)
+
+# One last plot, showing the zeroed out low frequencies, and the measured
+# oscillation frequency:
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Electric Field Energy Spectrum",
+    xlabel = "Frequency",
+    ylabel = "Amplitude",
+)
+lines!(ax, freqs[1:cutoff_index], freq_amps[1:cutoff_index])
+vlines!(ax, [measured_plasma_freq * 2])
+fig
 
 # Finally, we can compare this to the theoretically expected result:
-relative_error = (plasma_freq - expected_plasma_freq) / expected_plasma_freq
-@test abs(relative_error) < 0.01 #src
+relative_error = (measured_plasma_freq - expected_plasma_freq) / expected_plasma_freq
+@test abs(relative_error) < 0.05 #src
 
-# Less than 1% error. Not bad!
+# Less than a 5% error.
 #
-# ## Adding temperature to the plasma
-# In the previous simulation, the electric field energy grew unphysically throughout the
-# simulation. This was a result of the "grid-heating instability", which occurs when the
-# grid does not resolve the plasma Debye length, which for an electron plasma is given by
+# ## Scaling of frequency error with wavenumber
+# In the previous section, we seeded a plasma oscillation that spanned the entire
+# simulation domain. That is, the wavenumber was
 # ```math
-# \lambda_{D,e} = \sqrt{\frac{\epsilon_0 k_B T}{n_e q_e^2}},
+# k_\text{min} = \frac{2 \pi}{\lambda} = \frac{2 \pi}{L}.
 # ```
-# where ``k_B`` is the Boltzmann constant and ``T_e`` is the electron temperature.
+# This is the best possible case, because the oscillation spans as many grid cells
+# as possible. However, as the wavenumber increases (and equivalently, the wavelength
+# decreases), the finite grid effects will start to become more important, and they
+# will result in an increased error in the measured plasma frequency.
 #
-# When the Debye length of a plasma is underresolved, the plasma will unphysically heat,
-# causing the Debye length to grow until it is resolved by the grid. Many strategies have been
-# developed to mitigate this instability, but in this tutorial, we will simply give our plasma
-# sufficient thermal energy to begin so that the simulation will be stable against the
-# grid-heating instability.
-#
-# Let's calculate the required electron temperature in the previous simulation so that
-# the 32 cell grid will resolve the Debye length. We set ``\lambda_{D,e} = \Delta x``, and
-# solve for ``T`` to find
-boltzmann_constant = 1.381e-23
-dx^2 * number_density * elec_charge^2 / epsilon_0 / boltzmann_constant
-
-# Alternatively, we can express this temperature in terms of electron volts as
-dx^2 * number_density * elec_charge / epsilon_0
-
-# We will define a function that takes an electron density, electron temperature, and
-# oscillation wavenumber, and returns a measured plasma frequency.
-function measure_plasma_frequency(number_density, temperature, wavenumber)
+# Our goal in this section will be to observe and quantify this finite grid error.
+# We begin by defining a function that will run a PIC simulation at a specified
+# wavenumber, and return the measured plasma frequency.
+function measure_plasma_frequency(number_density, wavenumber, normalized_timestep = 0.01)
     sim_length = 1.0
-
     num_cells = 32
     dx = sim_length / num_cells
 
-    num_macroparticles = 320
+    num_macroparticles = 10 * num_cells
     particles_per_macro = number_density * sim_length / num_macroparticles
 
     perturb_amplitude = 1e3
     elec_mass = 9e-31
-    boltzmann_constant = 1.381e-23
-    thermal_velocity = sqrt(3 * boltzmann_constant * temperature / elec_mass)
-
     positions = collect(0:num_macroparticles-1) ./ num_macroparticles
     momentums =
-        (particles_per_macro * elec_mass) .*
-        (perturb_amplitude .* sin.(positions .* wavenumber) .+ thermal_velocity .* randn.())
+        (particles_per_macro * elec_mass * perturb_amplitude) .*
+        sin.(positions .* wavenumber)
 
     electrons = ParticleInCell.electrons(positions, momentums, particles_per_macro)
 
     grid = UniformCartesianGrid((0.0,), (sim_length,), (num_cells,), (true,))
 
-    dt = 5e-11
+    epsilon_0 = 8.8e-12
+    elec_charge = 1.6e-19
+    expected_plasma_freq = sqrt(number_density * elec_charge^2 / elec_mass / epsilon_0)
+    dt = normalized_timestep / expected_plasma_freq
     sim, fields = create_electrostatic_simulation(grid, [electrons], dt)
     Enode = fields[:Enode]
 
-    n_steps = 1000
+    ## We want to simulate the same length of physical time for each simulation,
+    ## so we need to have more steps when the timestep is shorter.
+    n_steps = round(Int, 100 / normalized_timestep)
     electric_field_energy = Vector{Float64}(undef, n_steps)
 
     epsilon_0 = 8.8e-12
@@ -281,30 +299,78 @@ function measure_plasma_frequency(number_density, temperature, wavenumber)
     plasma_freq = abs(max_freq / 2)
 
     return plasma_freq
-end
+end;
 
-# For a warm plasma, the thermal pressure acts as an additional restoring force on the
-# plasma oscillation. It can be show that the modified dispersion relation (frequency
-# response as a function of wavenumber) is given by
+# Let's run several simulations with different timesteps, and compare the accuracy
+# of each simulation.
+wavenumbers = 2 * pi .* [2, 4, 8, 16]
+plasma_freqs = measure_plasma_frequency.(1e14, wavenumbers, 0.001)
+
+# Let's plot the wavenumber of the oscillation verses the relative error between the
+# observed and predicted plasma frequencies. We expect that the error will be some
+# power law relation to the wavenumber, and so we will use a log-log plot.
+dx = 1 / 32
+normalized_wavenumbers = wavenumbers .* dx
+relative_errors = abs.(plasma_freqs ./ expected_plasma_freq .- 1)
+
+fig = Figure(size = (1000, 400))
+ax = Axis(
+    fig[1, 1],
+    title = "Frequency error",
+    xlabel = L"k \Delta x",
+    ylabel = L"\left|\frac{\omega}{\omega_p} - 1\right|",
+    xscale = log10,
+    yscale = log10,
+)
+scatter!(ax, normalized_wavenumbers, relative_errors)
+fig
+
+# Indeed, the error does appear to have a power law relation with the normalized
+# wavenumber. Let's fit the data to determine the index of the power law. We will
+# use the `LsqFit` package, which provides utilities for fitting data. We have
+# observed that the data is linear when plotted on a log-log plot, and so we will
+# fit the log-transformed data using a linear model.
+using LsqFit
+
+model(x, p) = p[1] .+ x .* p[2]
+fit = curve_fit(model, log10.(normalized_wavenumbers), log10.(relative_errors), [0.0, 2.0])
+params = coef(fit)
+
+# Notice that the second parameter, which corresponds to the exponent in the power law,
+# is about two. This makes sense, because the PIC algorithm we are using has second order
+# accuracy in ``k \Delta x``. As a final sanity check, let's plot the fit.
+lines!(
+    ax,
+    normalized_wavenumbers,
+    (10^params[1]) .* normalized_wavenumbers .^ params[2],
+    color = :red,
+)
+fig
+
+# There is one last thing we can do with this error model: we can us it to correct
+# out simulation results! Our model gives us the relation
 # ```math
-# \omega^2 = \omega_{p,e}^2 + \frac{3 k_B T_e}{m_e} k^2.
+# \left|\frac{\omega}{\omega_p} - 1\right| = C (k \Delta x)^p.
 # ```
-# Notice that when $T_e = 0$, the frequency is the plasma frequency, regardless
-# of the wavenumber.
-#
-# Let's run a few simulations and verify that this relationship holds.
-temperatures = [0, 0.1, 1, 10]
-measure_plasma_frequency.(1e14, temperatures, 1 / 2 * pi)
+# We can solve for ``\omega_p``, to obtain
+# ```math
+# \omega_p = \frac{\omega}{1 \pm C (k \Delta x)^p}.
+# ```
+# Let's find the error in the corrected plasma frequencies.
+corrected_plasma_freqs =
+    plasma_freqs ./ (1 .- (10^params[1]) .* normalized_wavenumbers .^ params[2])
+corrected_relative_errors =
+    (corrected_plasma_freqs .- expected_plasma_freq) ./ expected_plasma_freq
 
-# We can compare this to the expected result.
-function warm_plasma_freq(number_density, temperature, wavenumber)
-    epsilon_0 = 8.8e-12
-    elec_charge = 1.6e-19
-    elec_mass = 9e-31
-    boltzmann_constant = 1.381e-23
-    square_plasma_freq = number_density * elec_charge^2 / elec_mass / epsilon_0
-    correction_factor = boltzmann_constant * temperature * wavenumber^2 / elec_mass
-    return sqrt(square_plasma_freq + correction_factor)
-end
-warm_plasma_freq.(1e14, temperatures, 1 / 2 * pi)
-# Clearly, the restoring force of the pressure is not large enough to make a difference in this case.
+# Of course, this example is somewhat unrealistic: if we already know what the
+# plasma frequency should be, why are we running simulations to measure it?!?!
+# However, this general technique remains valid, even when we don't know what
+# the correct answer is a priori. This is why it is so important to conduct
+# scaling studies to gain confidence that your simulation is actually resolving
+# the physics that you think it is.
+
+# ## Wrap up
+# In this tutorial, you have learned how to simulate an electrostatic Langmuir
+# oscillation using `ParticleInCell`. Additionally, you have verified error scaling
+# of the algorithm in ``k \Delta x``, and used this information to correct the
+# originally measured plasma frequency.
