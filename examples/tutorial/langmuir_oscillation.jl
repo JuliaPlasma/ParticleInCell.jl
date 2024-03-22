@@ -357,7 +357,8 @@ fig
 # \omega_p = \frac{\omega}{1 \pm C (k \Delta x)^p}.
 # ```
 # Let's find the error in the corrected plasma frequencies.
-corrected_plasma_freqs = plasma_freqs ./ (1 .- (10^params[1]) .* normalized_wavenumbers .^ params[2])
+corrected_plasma_freqs =
+    plasma_freqs ./ (1 .- (10^params[1]) .* normalized_wavenumbers .^ params[2])
 corrected_relative_errors =
     (corrected_plasma_freqs .- expected_plasma_freq) ./ expected_plasma_freq
 
