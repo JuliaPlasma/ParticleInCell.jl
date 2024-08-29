@@ -44,7 +44,7 @@ end
 export step!
 
 include("field_utils.jl")
-export FiniteDifferenceToEdges, AverageEdgesToNodes
+export FiniteDifferenceToEdges, AverageEdgesToNodes, ZeroField, MultiplyField
 
 include("poisson.jl")
 export PoissonSolveFFT

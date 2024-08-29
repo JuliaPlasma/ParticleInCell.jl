@@ -68,3 +68,10 @@ struct ZeroField{F} <: AbstractSimulationStep
 end
 
 step!(step::ZeroField) = step.field.values .= 0
+
+struct MultiplyField{F,T} <: AbstractSimulationStep
+    field::F
+    x::T
+end
+
+step!(step::MultiplyField) = step.field.values .*= step.x
