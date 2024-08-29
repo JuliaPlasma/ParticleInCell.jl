@@ -163,6 +163,16 @@ struct BSplineChargeInterpolation{S,F,IF} <: AbstractSimulationStep
             interp_func,
         )
     end
+
+    function BSplineChargeInterpolation(
+        species::S,
+        rho::Field{T,N,NodeOffset},
+        interp_width,
+        interp_func::F,
+    ) where {T,N,S,F}
+
+        new{S,typeof(rho),F}(species, rho, -1, interp_width, interp_func)
+    end
 end
 
 function step!(step::BSplineChargeInterpolation)
