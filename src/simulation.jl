@@ -17,7 +17,7 @@ function create_electrostatic_simulation(
     sim = Simulation(AbstractSimulationStep[])
 
     # Create fields
-    lower_guard_cells = div(interpolation_order, 2)
+    lower_guard_cells = div(interpolation_order, 2) + 1
     rho = Field(grid, NodeOffset(), V, lower_guard_cells)
     phi = Field(grid, NodeOffset(), V, lower_guard_cells)
     Eedge = Field(grid, EdgeOffset(), V, lower_guard_cells)
