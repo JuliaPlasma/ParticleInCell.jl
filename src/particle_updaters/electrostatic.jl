@@ -56,7 +56,7 @@ function step!(step::ElectrostaticParticlePush)
         )
 
         for I in Is
-            grid_cell_coord = cell_index_to_cell_coords(step.E, I)
+            grid_cell_coord = cell_index_to_cell_coords(step.E, I, 1)
             dist = Tuple(particle_cell_coord .- grid_cell_coord)
             interp_weights = step.interpolation_function.(dist)
             interp_weight = prod(interp_weights)
