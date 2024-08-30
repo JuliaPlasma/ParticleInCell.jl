@@ -15,6 +15,6 @@
     dt = 1.0
     step = ElectrostaticParticlePush(species, E, dt)
     step!(step)
-    @test species.positions[1][1] == 0.5
+    @test species.positions[1][1] == 0.6
     @test species.momentums[1][1] == 0.1
 end

@@ -38,14 +38,6 @@ function step!(step::ElectrostaticParticlePush)
     species = step.species
 
     for n in eachindex(species)
-        # Push the particle based on its current velocity
-        particle_position!(
-            species,
-            n,
-            particle_position(species, n) .+
-            (step.timestep / particle_mass(species, n)) .* particle_momentum(species, n),
-        )
-
         # Accelerate the particle according to E
         # Find which cell the particle is in, and create a CartesianIndices
         # object that extends +/- interpolation_width in all directions
@@ -68,5 +60,13 @@ function step!(step::ElectrostaticParticlePush)
                 step.E.values[I],
             )
         end
+
+        # Push the particle based on its current velocity
+        particle_position!(
+            species,
+            n,
+            particle_position(species, n) .+
+            (step.timestep / particle_mass(species, n)) .* particle_momentum(species, n),
+        )
     end
 end
