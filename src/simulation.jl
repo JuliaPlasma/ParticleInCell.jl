@@ -1,4 +1,7 @@
 struct Simulation
+    grid::AbstractGrid
+    fields::Vector{AbstractField}
+    species::Vector{AbstractSpecies}
     steps::Vector{AbstractSimulationStep}
 end
 
@@ -49,4 +52,33 @@ function create_electrostatic_simulation(
     end
 
     return sim, (; rho, phi, Eedge, Enode)
+end
+
+function dump_pmd(sim::Simulation, filename, dump_number; author=nothing, machine=gethostname(), comment=nothing)
+    f = h5open(filename, "w")
+
+    attributes(f)["openPMD"] = "1.1.0"
+    attributes(f)["openPMDextension"] = UInt32(0)
+    attributes(f)["basePath"] = "/data/%T"
+
+    attributes(f)["meshesPath"] = "meshes/"
+    attributes(f)["particlesPath"] = "particles/"
+
+    if author !== nothing
+        attributes(f)["author"] = author
+    end
+    attributes(f)["software"] = "ParticleInCell.jl"
+    attributes(f)["softwareVersion"] = string(pkgversion(ParticleInCell))
+    # This should include a timezone for full PMD compliance
+    attributes(f)["date"] = string(now())
+
+    # TODO: add package versions, and kwarg to specify more dependencies
+    attributes(f)["softwareDependencies"] = "julia@$(VERSION)"
+    attributes(f)["machine"] = machine
+
+    if comment !== nothing
+        attributes(f)["comment"] = comment
+    end
+
+    close(f)
 end
