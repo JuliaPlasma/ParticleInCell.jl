@@ -48,7 +48,7 @@ struct Field{T,N,O,D,D1,G} <: AbstractField{T,N,O,D,G}
     end
 end
 
-num_elements(f::Field{T,N}) where {T,N} = N
+num_elements(::Field{T,N}) where {T,N} = N
 
 function Base.show(io::IO, f::Field{T,N,O,D,D1,G}) where {T,N,O,D,D1,G}
     print(
@@ -75,24 +75,19 @@ end
 @inline Base.lastindex(f::Field) = lastindex(f.values)
 @inline Base.firstindex(f::Field) = firstindex(f.values)
 
+@inline position_offset(::Field{T,N,NodeOffset}, dim) where {T,N} = zeros(N)
+@inline position_offset(::Field{T,N,EdgeOffset}, dim) where {T,N} =
+    0.5 .* unit_vec(dim, Val(N))
+@inline position_offset(::Field{T,N,FaceOffset}, dim) where {T,N} =
+    0.5 .* orth_vec(dim, Val(N))
+@inline position_offset(::Field{T,N,CenterOffset}, dim) where {T,N} = 0.5 .* ones(N)
+
 @inline function cell_index_to_cell_coords(f::Field, I)
     return Tuple(I) .- f.index_offset
 end
 
-@inline function cell_index_to_cell_coords(f::Field{T,N,NodeOffset}, I, dim) where {T,N}
-    return cell_index_to_cell_coords(f, I)
-end
-
-@inline function cell_index_to_cell_coords(f::Field{T,N,EdgeOffset}, I, dim) where {T,N}
-    return cell_index_to_cell_coords(f, I) .+ 0.5 .* unit_vec(dim, Val(N))
-end
-
-@inline function cell_index_to_cell_coords(f::Field{T,N,FaceOffset}, I, dim) where {T,N}
-    return cell_index_to_cell_coords(f, I) .+ 0.5 .* orth_vec(dim, Val(N))
-end
-
-@inline function cell_index_to_cell_coords(f::Field{T,N,CenterOffset}, I, dim) where {T,N}
-    return cell_index_to_cell_coords(f, I) .+ 0.5
+@inline function cell_index_to_cell_coords(f::Field, I, dim)
+    return cell_index_to_cell_coords(f, I) .+ position_offset(f, dim)
 end
 
 @inline function cell_coords_to_cell_index(f::Field, idxs)
