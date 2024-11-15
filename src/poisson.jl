@@ -2,7 +2,7 @@ field_solve_three_pt(k, dx) = k^2 * sinc(k * dx / 2 / pi)^2
 field_solve_lagrange(k, dx) = k^2 * sinc(k * dx / 2 / pi)^2 * (2 + cos(k * dx)) / 3
 field_solve_five_pt(k, dx) = -1 * k^2 * sinc(k * dx / 2 / pi)^2 * (-7 + cos(k * dx)) / 6
 
-struct PoissonSolveFFT{T,D,G,P,F<:AbstractField} <: AbstractSimulationStep
+struct PoissonSolveFFT{T,D,P,F<:AbstractField} <: AbstractSimulationStep
     rho::F
     phi::F
 
@@ -15,12 +15,13 @@ struct PoissonSolveFFT{T,D,G,P,F<:AbstractField} <: AbstractSimulationStep
         rho::F,
         phi::F,
         k2s = field_solve_three_pt,
-    ) where {T,D,G,F<:AbstractField{T,D,G}}
+    ) where {T,N,O,D,F<:AbstractField{T,N,O,D}}
         # This restriction could possibly be relaxed to just require compatible grids...
         @assert rho.grid === phi.grid
         # Currently only supports periodic boundary conditions...
         @assert all(rho.grid.periodic)
         @assert num_elements(rho) == 1 && num_elements(phi) == 1
+        @assert N == 1
 
         epsilon_0 = 8.8541878128e-12
         # Ksq_inv = reshape(copy(rho.values), size(rho.values)[1:end-1]...)
@@ -51,7 +52,7 @@ struct PoissonSolveFFT{T,D,G,P,F<:AbstractField} <: AbstractSimulationStep
 
         fft_plan = plan_fft!(ft_vector)
 
-        new{T,D,G,typeof(fft_plan),F}(rho, phi, Ksq_inv, ft_vector, fft_plan)
+        new{T,D,typeof(fft_plan),F}(rho, phi, Ksq_inv, ft_vector, fft_plan)
     end
 end
 
