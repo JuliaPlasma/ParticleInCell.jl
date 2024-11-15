@@ -12,6 +12,9 @@ using StaticArrays
 using StructEquality
 using SparseArrays
 using LinearSolve
+using HDF5
+using Dates
+using Sockets
 
 import Base: eachindex
 
