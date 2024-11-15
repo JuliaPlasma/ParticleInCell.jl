@@ -26,3 +26,11 @@ end
 @inline function phys_coords_to_cell_coords(grid::UniformCartesianGrid, xs)
     return (xs .- grid.lower_bounds) ./ cell_lengths(grid)
 end
+
+function axis_label(::UniformCartesianGrid, dim)
+    return ("x", "y", "z")[dim]
+end
+
+function geometry_name(::UniformCartesianGrid)
+    return "cartesian"
+end

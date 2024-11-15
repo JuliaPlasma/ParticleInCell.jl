@@ -72,4 +72,20 @@ For more information on the different types of coordinate systems, see
 """
 function phys_coords_to_cell_coords end
 
+"""
+    axis_label(grid, dim)
+
+Returns the label for the axis `dim` of the grid `grid`. This is used for
+outputting the axis labels in the openPMD standard.
+"""
+function axis_label end
+
+"""
+    geometry_name(grid)
+
+Returns the name of the geometry of the grid `grid`. This is used for
+outputting the geometry in the openPMD standard.
+"""
+function geometry_name end
+
 include("uniform_cartesian_grid.jl")
