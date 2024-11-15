@@ -27,7 +27,7 @@ test-integration:
 
 .PHONY: format
 format:
-	julia --project=utils/format/ utils/format/format.jl
+	julia +lts --project=utils/format/ utils/format/format.jl
 
 .PHONY: docs
 docs:
