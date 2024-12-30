@@ -12,6 +12,7 @@ using StaticArrays
 using StructEquality
 using SparseArrays
 using LinearSolve
+using Distributions
 
 import Base: eachindex
 

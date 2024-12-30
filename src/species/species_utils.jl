@@ -36,3 +36,28 @@ function electrons(positions::Vector{T}, momentums::Vector{T}, weight::T) where 
     weights = fill(weight, length(positions))
     return electrons(positions, momentums, weights)
 end
+
+function quiet_velocities(num_macroparticles, distribution, T = Float64)
+    velocities = Vector{T}(undef, num_macroparticles)
+    for i = 1:num_macroparticles
+        velocities[i] = quantile(distribution, (i - 0.5) / num_macroparticles)
+    end
+    return velocities
+end
+
+function bit_reversed_sequence(n, base = 2, T = Float64)
+    seq = Vector{T}(undef, n)
+
+    m = round(Int, log(base, n), RoundUp)
+
+    for i = 0:n-1
+        j = 0
+        for (k, digit) in enumerate(digits(i, base = base, pad = m))
+            j += digit * base^(m - k)
+        end
+
+        seq[i+1] = j / base^m
+    end
+
+    return seq
+end
