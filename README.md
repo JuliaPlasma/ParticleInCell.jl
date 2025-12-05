@@ -14,11 +14,11 @@ reach out on either GitHub, or over email, so that we can discuss how the
 package can be modified to suite your needs.
 
 ## Getting Started
-`ParticleInCell` is currently not registered in the Julia package registry.
-Thus, to install this package, you should use `Pkg.develop`:
+`ParticleInCell` is registered in the Julia package registry.
+Thus, to install this package, you can simply `Pkg.add`:
 ```julia
 using Pkg
-Pkg.develop(url="https://github.com/JuliaPlasma/ParticleInCell.jl")
+Pkg.add("ParticleInCell")
 ```
 
 ## Documentation
